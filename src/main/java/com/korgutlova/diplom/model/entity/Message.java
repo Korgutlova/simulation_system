@@ -1,7 +1,7 @@
 package com.korgutlova.diplom.model.entity;
 
 import com.korgutlova.diplom.model.enums.DirectionMessage;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -24,7 +24,7 @@ public class Message {
     private String text;
 
     @CreationTimestamp
-    private LocalDate messageCreated;
+    private LocalDateTime messageCreated;
 
     @ManyToOne
     @JoinColumn(name = "bot_id", nullable = false)

@@ -2,7 +2,7 @@ package com.korgutlova.diplom.model.entity;
 
 import com.korgutlova.diplom.model.enums.simulation.CommunicationType;
 import com.korgutlova.diplom.model.enums.simulation.TaskDistributionType;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Set;
 import javax.persistence.*;
 import lombok.Data;
@@ -15,13 +15,15 @@ public class Project {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    private String shortName;
+
     private String name;
 
     private String description;
 
-    private LocalDate startDate;
+    private LocalDateTime startDate;
 
-    private LocalDate endDate;
+    private LocalDateTime endDate;
 
     @Enumerated(EnumType.STRING)
     private CommunicationType communicationType;
@@ -34,4 +36,9 @@ public class Project {
 
     //необходимое время работы в неделю в часах
     private int workHoursPerWeek;
+
+    //todo, редактировать может только создатель (также добавлять,вопросы/ботов)
+//    @ManyToOne
+//    @JoinColumn(nullable = false, name = "user_id")
+//    private User creator;
 }

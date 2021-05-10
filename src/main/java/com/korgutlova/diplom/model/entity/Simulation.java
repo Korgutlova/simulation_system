@@ -29,4 +29,6 @@ public class Simulation {
 
     @Enumerated(EnumType.STRING)
     private SimStatus status = SimStatus.INITIALIZE;
+
+    private String linkRepo;
 }

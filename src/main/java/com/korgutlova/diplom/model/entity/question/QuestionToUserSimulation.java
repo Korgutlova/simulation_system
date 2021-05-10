@@ -1,7 +1,7 @@
 package com.korgutlova.diplom.model.entity.question;
 
 import com.korgutlova.diplom.model.entity.Simulation;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import javax.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
@@ -23,5 +23,5 @@ public class QuestionToUserSimulation {
     private Simulation simulation;
 
     @CreationTimestamp
-    private LocalDate dateAsked;
+    private LocalDateTime dateAsked;
 }

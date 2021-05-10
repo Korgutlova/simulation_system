@@ -1,6 +1,6 @@
 package com.korgutlova.diplom.model.entity.tasktracker;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import javax.persistence.*;
 import lombok.Data;
 
@@ -17,7 +17,7 @@ public class SpentTimeTask {
 
     private String description;
 
-    private LocalDate startDate;
+    private LocalDateTime startDate;
 
     //продолжительность работы
     private int hours;
