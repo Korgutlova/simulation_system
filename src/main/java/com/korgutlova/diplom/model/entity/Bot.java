@@ -28,6 +28,7 @@ public class Bot {
     private TeamRole teamRole;
 
     @ManyToOne
+    @JoinColumn(name = "project_id", nullable = false)
     private Project project;
 
     //list questions

@@ -10,6 +10,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import lombok.Data;
 
@@ -28,7 +29,7 @@ public class QuestionCommand {
     private String command;
 
     //если null значит это общий вопрос для всех проектов
-    @Column(name = "project_id")
+    @JoinColumn(name = "project_id")
     @ManyToOne
     private Project project;
 

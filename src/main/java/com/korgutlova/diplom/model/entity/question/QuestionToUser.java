@@ -19,12 +19,12 @@ public class QuestionToUser {
     private String answer;
 
     //вопрос задает определенный бот, если null значит определенный бот по роли
-    @Column(name = "bot_id")
+    @JoinColumn(name = "bot_id")
     @ManyToOne
     private Bot bot;
 
     //если тут null, значит вопрос просто так, не для задачи
-    @Column(name = "task_id")
+    @JoinColumn(name = "task_id")
     @ManyToOne
     private Task forTask;
 

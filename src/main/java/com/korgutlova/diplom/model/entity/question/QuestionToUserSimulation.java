@@ -14,11 +14,11 @@ public class QuestionToUserSimulation {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(name = "question_id")
+    @JoinColumn(name = "question_id", nullable = false)
     @ManyToOne
     private QuestionToUser question;
 
-    @Column(name = "simulation_id")
+    @JoinColumn(name = "simulation_id", nullable = false)
     @ManyToOne
     private Simulation simulation;
 

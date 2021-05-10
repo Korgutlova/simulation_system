@@ -11,8 +11,8 @@ public class SpentTimeTask {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(name = "task_in_simulation_id")
     @ManyToOne
+    @JoinColumn(name = "task_in_simulation_id", nullable = false)
     private TaskInSimulation task;
 
     private String description;

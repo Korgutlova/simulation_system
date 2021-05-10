@@ -12,12 +12,12 @@ public class TaskInSimulation {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(name = "task_id")
     @ManyToOne
+    @JoinColumn(name = "task_id", nullable = false)
     private Task task;
 
-    @Column(name = "simulation_id")
     @ManyToOne
+    @JoinColumn(name = "simulation_id", nullable = false)
     private Simulation simulation;
 
     @Enumerated(EnumType.STRING)

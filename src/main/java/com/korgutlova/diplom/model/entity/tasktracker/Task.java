@@ -19,6 +19,7 @@ public class Task {
     private String description;
 
     @ManyToOne
+    @JoinColumn(name = "bot_id", nullable = false)
     private Bot creator;
 
     @Enumerated(EnumType.STRING)
