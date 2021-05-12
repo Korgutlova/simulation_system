@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Common chat</title>
+    <link type="text/css" href="../static/css/main.css" th:href="@{/css/main.css}" rel="stylesheet"/>
+    <link type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+          rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.4.0/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+</head>
+<body>
+<nav class="navbar navbar-expand-md navbar-light bg-light">
+    <a class="navbar-brand" href="#">
+        <img src="https://kpfu.ru/media/logo210eng.png" alt="">
+    </a>
+    <div class="collapse navbar-collapse justify-content-end">
+        <ul class="navbar-nav ">
+            <li class="nav-item">
+                <div style="margin-right: 40px">
+                    <!-- Использование вьюхи тут -->
+                    <p class="navbar-text my-2 my-sm-0" th:text="${user}"></p>
+                </div>
+            </li>
+            <li class="nav-item">
+                <form th:action="@{/logout}" method="post">
+                    <button class="btn btn-outline-danger my-2 my-sm-0" type="submit">Logout</button>
+                </form>
+            </li>
+        </ul>
+
+    </div>
+</nav>
+<main role="main" class="container">
+    <div class="header_chat">
+        <h4 th:text="'Conversation ${chat.getName()}'"></h4>
+        <hr>
+    </div>
+    <div class="overflow-auto" style="width: 1000px; height: 550px" id="messages">
+        <ul class="messages-container" style="list-style-type:none; margin-top: 20px">
+            <!--<li class="message-item" th:each="m : ${chat.getMessages()}" th:id="'m_' + ${m.getId()}"-->
+                <!--th:if="${m.isSimple()}">-->
+
+                <div class="card container" style="padding-left: 8px; padding-top: 5px; line-height: 1">
+                    <div class="row">
+                        <div class="col-9">
+                            <strong><p th:text="'${m.getUser().getLogin()}'">name</p></strong>
+                            <p th:text="'${m.getText()}'">Text</p>
+                        </div>
+                        <div class="col-3" style="text-align: right;">
+                            <p th:if="'${user.isModerator()or user.isAdmin()}'" style="font-size: 25px; color: #9d0000"
+                               class="del_message">
+                                <i class="fa fa-times"></i></p>
+                            <!--<p th:text="${#temporals.format(m.getDateTime(), 'HH:mm:ss dd.MM.YY')}"-->
+                               <!--style="color: gray;">Data</p>-->
+                            <p th:text="'12:34:44 13.05.21'" style="color: gray;">Data</p>
+                        </div>
+                    </div>
+                </div>
+
+                <br>
+            <!--</li>-->
+        </ul>
+
+    </div>
+    <hr>
+    <div class="panel-footer">
+        <div class=" row" style=" margin-left: 60px">
+            <div class="col-md-8">
+            <textarea name="text" id="message" cols="70" rows="2" class="form-control"
+                      placeholder="Enter your message..."></textarea>
+            </div>
+            <div class="col-md-3">
+                <input class="btn btn-info" style="width: 150px" type="submit" id="custombtn" value="Send">
+            </div>
+        </div>
+    </div>
+</main>
+
+</body>
+</html>
