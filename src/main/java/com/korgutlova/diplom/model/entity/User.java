@@ -23,4 +23,16 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private Role role = Role.USER;
+
+    public String getFirstAndLastName() {
+        return firstName + " " + lastName;
+    }
+
+    public String getFullName() {
+        return firstName + " " + lastName + " " + thirdName;
+    }
+
+    public String getNameWithRole() {
+        return firstName + " " + lastName + " (" + role.getName() + ")";
+    }
 }

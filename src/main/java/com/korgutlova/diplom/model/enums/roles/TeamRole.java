@@ -11,4 +11,8 @@ public enum TeamRole {
     TeamRole(String name) {
         this.name = name;
     }
+
+    public String getName() {
+        return name;
+    }
 }

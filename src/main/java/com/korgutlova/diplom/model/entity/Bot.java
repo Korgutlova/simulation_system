@@ -33,4 +33,7 @@ public class Bot {
 
     //list questions
 
+    public String getNameWithRole() {
+        return user.getFirstName() + " " + user.getLastName() + " (" + teamRole.name() + ")";
+    }
 }
