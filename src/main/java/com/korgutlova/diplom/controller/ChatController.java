@@ -1,8 +1,13 @@
 package com.korgutlova.diplom.controller;
 
 import com.korgutlova.diplom.model.entity.Bot;
+import com.korgutlova.diplom.model.entity.Message;
+import com.korgutlova.diplom.model.entity.Simulation;
 import com.korgutlova.diplom.model.entity.User;
 import com.korgutlova.diplom.service.api.BotService;
+import com.korgutlova.diplom.service.api.MessageService;
+import com.korgutlova.diplom.service.api.SimulationService;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -15,34 +20,37 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class ChatController {
 
     private final BotService botService;
+    private final MessageService messageService;
+    private final SimulationService simulationService;
 
     @GetMapping("/chat")
     public String getChat(@RequestParam(name = "id", required = false) String id, Model model) {
         User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        //default chat - открывается по последнему сообщению отправленному с нашей стороны или со стороны бота
-
-        //возвращаем список активных ботов (с кем была хоть какая-нибудь связь)
-
-        //возвращаем текущую переписку
-
-//        model.addAttribute("chat", conversationService.getConversation(Long.valueOf(id)));
-        Long defaultId;
+        Bot bot;
+        Simulation currentSim = simulationService.findActiveSimulation(currentUser);
         if (id == null || id.isEmpty()) {
-            defaultId = 105L;
+            Message lastMessage = messageService.findLastMessage(currentSim);
+            if (lastMessage == null){
+                //у пользователя нет сообщений, выводим пусто..
+                model.addAttribute("bots", null);
+                return "chat_page";
+            }
+            bot = lastMessage.getBot();
         } else  {
-            defaultId = Long.valueOf(id);
+            bot = botService.findById(Long.valueOf(id));
+
+            //обработка экспшена если такго бота нет, или он есть но из другой симуляции
         }
-        Bot bot = botService.findById(defaultId);
 
-        // если есть хоть одно сообщение с ботом выводи его в список
-        model.addAttribute("bots", null);
-        // сообщения от бота и от пользака
-        model.addAttribute("messages", null);
-        //текущий чат
+        Set<Bot> activeBots = messageService.findActiveBots(currentSim);
+        activeBots.add(bot);
+        model.addAttribute("bots", activeBots);
 
+        model.addAttribute("messages", messageService.findMessages(currentSim, bot));
         model.addAttribute("bot", bot);
         model.addAttribute("user", currentUser);
+
         return "chat_page";
     }
 }

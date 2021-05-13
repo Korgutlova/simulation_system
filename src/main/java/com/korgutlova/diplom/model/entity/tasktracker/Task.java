@@ -1,6 +1,7 @@
 package com.korgutlova.diplom.model.entity.tasktracker;
 
 import com.korgutlova.diplom.model.entity.Bot;
+import com.korgutlova.diplom.model.entity.Project;
 import com.korgutlova.diplom.model.enums.task.*;
 import javax.persistence.*;
 import lombok.Data;
@@ -33,4 +34,8 @@ public class Task {
 
     //сколько нужно дать верных ответов, чтобы выдать данную задачу пользователю
     private int rightQuestion;
+
+    @ManyToOne
+    @JoinColumn(name = "project_id", nullable = false)
+    private Project project;
 }

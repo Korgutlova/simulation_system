@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Common chat</title>
+    <title th:text="'Чат с ' + ${bot.getUser().getFirstAndLastName()}">Чат</title>
     <link type="text/css"
           href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
           rel="stylesheet">
@@ -18,31 +18,20 @@
     <div class="row">
         <div class="col-md-3">
             <div class="header_chat">
-                <h4>Chats</h4>
+                <h4>Чаты</h4>
                 <hr>
                 <div id="chats-panel" class="overflow-auto"
                      style="height: 500px">
                     <ul class="chats" style="list-style-type:none">
-                        <!--<li class="chat-item" style="list-style-type:none" th:each="c : ${chats}"-->
-                        <!--th:id="'chat_' + ${c.getId()}">-->
-                        <li>
+                        <li class="chat-item" style="list-style-type:none" th:each="b : ${bots}"
+                        th:id="'chat_' + ${b.getId()}">
                             <div><a style="text-decoration: none"
-                                    th:href="@{/chat(id=1)}">
-                                <p th:id="${bot.getId()}" th:text="${bot.getUser().getFirstAndLastName()}">..</p>
+                                    th:href="@{/chat(id=${b.getId()})}">
+                                <p th:id="${b.getId()}" th:text="${b.getUser().getFirstAndLastName()}">..</p>
                             </a>
                             </div>
                             <hr>
                         </li>
-                        <li>
-                            <!--<div><a style="text-decoration: none" th:href="@{/room(id=${c.getId()})}">-->
-                            <div><a style="text-decoration: none"
-                                    th:href="@{/chat(id=2)}">
-                                <p th:id="${bot.getId()}" th:text="${bot.getUser().getFirstAndLastName()}">..</p>
-                            </a>
-                            </div>
-                            <hr>
-                        </li>
-                        <!--</li>-->
                     </ul>
                 </div>
             </div>
@@ -55,33 +44,21 @@
             <div class="overflow-auto" style="height: 500px" id="messages">
                 <ul class="messages"
                     style="list-style-type:none; margin-top: 20px">
-                    <!--<li class="message-item"-->
-                    <!--th:each="m : ${current_chat.getMessages()}"-->
-                    <!--th:id="'m_' + ${m.getId()}"-->
-                    <!--th:if="${m.isSimple() || m.isInformation()}">-->
-                    <li class="message-item">
-                        <div class="card container"
-                             style="padding-left: 8px; padding-top: 5px; line-height: 1">
-                             <!--th:if="${m.isSimple()}">-->
+                    <li class="message-item"
+                    th:each="m : ${messages}">
+                        <div class="card container" style="padding-left: 8px; padding-top: 5px; line-height: 1">
                             <div class="row">
                                 <div class="col-9">
-                                    <p th:text="'Привет как дела???'">Text</p>
+                                    <p th:text="${m.getText()}">Text</p>
                                 </div>
                                 <div class="col-3" style="text-align: right;">
-                                    <!--<p th:if="${user.isModerator()or user.isAdmin()}"-->
-                                    <!--style="font-size: 25px; color: #9d0000"-->
-                                    <!--class="del_message">-->
-                                    <!--<i class="fa fa-times"></i></p>-->
-                                    <!--<p th:text="${#temporals.format(m.getDateTime(), 'HH:mm:ss dd.MM.YY')}"-->
-                                    <!--style="color: gray;">Data</p>-->
-                                    <p th:text="'16:10:30 05.04.21'"
+                                    <p th:text="${#temporals.format(m.getMessageCreated(), 'HH:mm:ss dd.MM.YY')}"
                                        style="color: gray;">Data</p>
                                 </div>
                             </div>
                         </div>
                         <br>
                     </li>
-                    <!--</li>-->
                 </ul>
 
             </div>

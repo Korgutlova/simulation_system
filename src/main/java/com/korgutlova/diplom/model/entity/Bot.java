@@ -1,5 +1,6 @@
 package com.korgutlova.diplom.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.korgutlova.diplom.model.enums.roles.TeamRole;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -29,11 +30,12 @@ public class Bot {
 
     @ManyToOne
     @JoinColumn(name = "project_id", nullable = false)
+    @JsonIgnore
     private Project project;
 
     //list questions
 
     public String getNameWithRole() {
-        return user.getFirstName() + " " + user.getLastName() + " (" + teamRole.name() + ")";
+        return user.getFirstName() + " " + user.getLastName() + " (" + teamRole.getName() + ")";
     }
 }
