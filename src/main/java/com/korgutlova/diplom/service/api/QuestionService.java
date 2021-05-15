@@ -6,4 +6,6 @@ public interface QuestionService {
     String findQuestionByCommand(String command);
 
     void create(QuestionCommandDto questionCommandDto);
+
+    String findQuestion(String question);
 }

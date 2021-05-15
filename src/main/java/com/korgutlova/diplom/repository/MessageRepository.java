@@ -13,7 +13,7 @@ public interface MessageRepository extends CrudRepository<Message, Long> {
 
     Optional<Message> findFirstBySimulationOrderByMessageCreatedDesc(Simulation simulation);
 
-    List<Message> findAllBySimulationAndBot(Simulation simulation, Bot bot);
+    List<Message> findAllBySimulationAndBotOrderByMessageCreatedAsc(Simulation simulation, Bot bot);
 
     List<Message> findAllBySimulation(Simulation simulation);
 }

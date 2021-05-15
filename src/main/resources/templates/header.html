@@ -28,12 +28,12 @@
                 </li>
                 <li class="nav-item">
                     <div style="margin-right: 40px">
-                        <p class="navbar-text my-2 my-sm-0" th:text="${user.getNameWithRole()}"></p>
+                        <p class="navbar-text my-2 my-sm-0" th:text="${user.getFirstAndLastName()}"></p>
                     </div>
                 </li>
                 <li class="nav-item">
                     <form th:action="@{/logout}" method="post">
-                        <button class="btn btn-outline-danger my-2 my-sm-0" type="submit">Logout</button>
+                        <button class="btn btn-outline-danger my-2 my-sm-0" type="submit">Выйти</button>
                     </form>
                 </li>
             </ul>

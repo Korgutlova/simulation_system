@@ -4,6 +4,7 @@ import com.korgutlova.diplom.model.entity.Bot;
 import com.korgutlova.diplom.model.entity.Message;
 import com.korgutlova.diplom.model.entity.Simulation;
 import com.korgutlova.diplom.model.entity.User;
+import com.korgutlova.diplom.model.mapper.MessageMapper;
 import com.korgutlova.diplom.service.api.BotService;
 import com.korgutlova.diplom.service.api.MessageService;
 import com.korgutlova.diplom.service.api.SimulationService;
@@ -22,6 +23,7 @@ public class ChatController {
     private final BotService botService;
     private final MessageService messageService;
     private final SimulationService simulationService;
+    private final MessageMapper messageMapper;
 
     @GetMapping("/chat")
     public String getChat(@RequestParam(name = "id", required = false) String id, Model model) {
@@ -47,7 +49,7 @@ public class ChatController {
         activeBots.add(bot);
         model.addAttribute("bots", activeBots);
 
-        model.addAttribute("messages", messageService.findMessages(currentSim, bot));
+        model.addAttribute("messages", messageMapper.toListViews(messageService.findMessages(currentSim, bot)));
         model.addAttribute("bot", bot);
         model.addAttribute("user", currentUser);
 

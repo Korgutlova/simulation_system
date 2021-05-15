@@ -8,4 +8,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface QuestionCommandRepository extends CrudRepository<QuestionCommand, Long> {
     Optional<QuestionCommand> findByCommand(String command);
+
+    Optional<QuestionCommand> findByQuestion(String question);
 }

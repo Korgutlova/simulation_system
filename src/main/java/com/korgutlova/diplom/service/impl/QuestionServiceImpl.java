@@ -29,4 +29,13 @@ public class QuestionServiceImpl implements QuestionService {
     public void create(QuestionCommandDto questionCommandDto) {
         questionCommandRepository.save(questionCommandMapper.toEntity(questionCommandDto));
     }
+
+    @Override
+    public String findQuestion(String question) {
+        Optional<QuestionCommand> resultQuestion = questionCommandRepository.findByQuestion(question);
+        if (resultQuestion.isPresent()) {
+            return resultQuestion.get().getAnswer();
+        }
+        throw new QuestionNotFound("Вопрос " + question + " не найден");
+    }
 }

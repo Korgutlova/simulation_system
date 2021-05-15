@@ -46,7 +46,8 @@
                     style="list-style-type:none; margin-top: 20px">
                     <li class="message-item"
                     th:each="m : ${messages}">
-                        <div class="card container" style="padding-left: 8px; padding-top: 5px; line-height: 1">
+                        <div class="card container" style="padding-left: 8px; padding-top: 5px; line-height: 1"
+                             th:if="${m.isFromBot()}">
                             <div class="row">
                                 <div class="col-9">
                                     <p th:text="${m.getText()}">Text</p>
@@ -54,6 +55,17 @@
                                 <div class="col-3" style="text-align: right;">
                                     <p th:text="${#temporals.format(m.getMessageCreated(), 'HH:mm:ss dd.MM.YY')}"
                                        style="color: gray;">Data</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card container" style="color:white; background: #a0a2c9; padding-left: 8px; padding-top: 5px; line-height: 1"
+                             th:unless="${m.isFromBot()}">
+                            <div class="row">
+                                <div class="col-3" style="text-align: left;">
+                                    <p th:text="${#temporals.format(m.getMessageCreated(), 'HH:mm:ss dd.MM.YY')}">Data</p>
+                                </div>
+                                <div class="col-9" style="text-align: right">
+                                    <p th:text="${m.getText()}">Text</p>
                                 </div>
                             </div>
                         </div>
@@ -68,12 +80,12 @@
                     <div class="col-md-8">
             <textarea name="text" id="message" cols="70" rows="2"
                       class="form-control"
-                      placeholder="Enter your message..."></textarea>
+                      placeholder="Введите ваше сообщение..."></textarea>
                     </div>
                     <div class="col-md-3">
                         <input class="btn btn-info"
-                               style="width: 150px"
-                               type="submit" id="custombtn" value="Send">
+                               style="width: 150px; background: #5c4bad"
+                               type="submit" id="custombtn" value="Отправить">
                     </div>
                 </div>
             </div>
@@ -107,13 +119,54 @@
             var addressConvUser = addressRoom + '/user/' + [[${user.getId()}]];
             stompClient.subscribe(addressConvUser, function (message) {
                 var m = JSON.parse(message.body);
-                alert(m.text);
+                var blockChat;
+                if (m.directionMessage === 'BOT_TO_USER'){
+                    blockChat = '<li class="message-item">\n' +
+                        '\t<div class="card container" style="padding-left: 8px; padding-top: 5px; line-height: 1">\n' +
+                        '\t\t<div class="row">\n' +
+                        '\t\t\t<div class="col-9">\n' +
+                        '\t\t\t\t<p>' + m.text + '</p>\n' +
+                        '\t\t\t</div>\n' +
+                        '\t\t\t<div class="col-3" style="text-align: right;">\n' +
+                        '\t\t\t\t<p style="color: gray;">' + m.messageCreated + '</p>\n' +
+                        '\t\t\t</div>\n' +
+                        '\t\t</div>\n' +
+                        '\t</div>\n' +
+                        '\t<br>\n' +
+                        '</li>';
+                    addBlockToChat(blockChat, '.message-item', '#messages', '.messages');
+                } else {
+                    blockChat ='<li class="message-item">\n' +
+                        '\t<div class="card container" style="color:white; background: #a0a2c9; padding-left: 8px; padding-top: 5px; line-height: 1">\n' +
+                        '\t\t<div class="row">\n' +
+                        '\t\t\t<div class="col-3" style="text-align: left;">\n' +
+                        '\t\t\t\t<p>' + m.messageCreated + '</p>\n' +
+                        '\t\t\t</div>\n' +
+                        '\t\t\t<div class="col-9" style="text-align: right;">\n' +
+                        '\t\t\t\t<p>' + m.text + '</p>\n' +
+                        '\t\t\t</div>\n' +
+                        '\t\t</div>\n' +
+                        '\t</div>\n' +
+                        '\t<br>\n' +
+                        '</li>';
+                    addBlockToChat(blockChat, '.message-item', '#messages', '.messages');
+                }
             });
         }, function (error) {
             console.log("STOMP protocol error " + error);
         });
 
     });
+
+    function addBlockToChat(block, my_item, scrollBar, container) {
+        var block_item = $(my_item);
+        if (block_item.length) {
+            block_item.last().after(block);
+            $(scrollBar).scrollTop(1E10);
+        } else {
+            $(container).append(block);
+        }
+    }
 
     function sendForm() {
         var text = $('#message').val();
