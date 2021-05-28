@@ -2,7 +2,6 @@ package com.korgutlova.diplom.model.entity.question;
 
 import com.korgutlova.diplom.model.entity.Project;
 import com.korgutlova.diplom.model.enums.roles.TeamRole;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -23,12 +22,6 @@ public class CustomQuestion {
     private String question;
 
     private String answer;
-
-    //вопрос разделенный на токены
-    private String questionTokens;
-
-    //ответ разделенный на токены
-    private String answerTokens;
 
     @Enumerated(EnumType.STRING)
     private TeamRole typeQuestion;

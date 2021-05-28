@@ -1,38 +1,35 @@
 package com.korgutlova.diplom.controller;
 
 import java.io.IOException;
-import org.kohsuke.github.GHCommit;
-import org.kohsuke.github.GHRef;
-import org.kohsuke.github.GHRepository;
-import org.kohsuke.github.GHTreeBuilder;
-import org.kohsuke.github.GitHub;
-import org.kohsuke.github.GitHubBuilder;
+import org.kohsuke.github.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/github")
 public class GitHubController {
 
-    @GetMapping("/test")
+    @Value("${github.oauth}")
+    private String oauth;
+
+    @PostMapping("/create")
     public ResponseEntity<String> testGitHub() throws IOException {
         GitHub github = new GitHubBuilder()
-                .withOAuthToken("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")
+                .withOAuthToken(oauth)
                 .build();
         GHRepository repository = github.createRepository("new_test_project_1").create();
         repository.setPrivate(true);
         repository.setDescription("New test project");
 
-        //добавить в коллабораторы самого пользака + email разраба который может курировать
+        //добавить в коллабораторы самого пользователь + email разраба (TeamLead)
         return ResponseEntity.ok("ok");
     }
 
-    @GetMapping("/test/commit")
+    @PostMapping("/commit")
     public ResponseEntity<String> testCommit() throws IOException {
         GitHub github = new GitHubBuilder()
-                .withOAuthToken("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")
+                .withOAuthToken(oauth)
                 .build();
 
         String username = github.getMyself().getLogin();

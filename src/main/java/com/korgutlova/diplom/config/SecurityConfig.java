@@ -32,7 +32,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .antMatchers("/login", "/sign_up/**").anonymous()
+                .antMatchers("/login", "/sign_up/**", "**/**").anonymous()
                 .antMatchers("/chat/**", "/conversation/**", "/queue/**",
                         "/app/**", "/topic/**", "/api/**")
                 .hasAnyRole(USER.toString(), ADMIN.toString(), BOT.toString(), ORGANIZER.toString());
