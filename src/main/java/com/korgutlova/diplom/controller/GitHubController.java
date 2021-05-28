@@ -35,6 +35,9 @@ public class GitHubController {
         String username = github.getMyself().getLogin();
         GHRepository repo = github.getRepository( username + "/new_test_project_1");
 
+//        repo.getWorkflow(4) - получить github actions
+//        repo.getWorkflowJob(3).getStatus() - получить статус по github actions (только как узнать этот id ?)
+
         //ВОТ РЕШЕНИЕ (первой инициализации репы)
 //        repo.createContent()
 //                .branch("master")
