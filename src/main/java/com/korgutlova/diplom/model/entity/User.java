@@ -1,5 +1,6 @@
 package com.korgutlova.diplom.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.*;
 import lombok.Data;
 import com.korgutlova.diplom.model.enums.roles.Role;
@@ -24,6 +25,11 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role = Role.USER;
 
+    @ManyToOne
+    @JoinColumn(name = "group_id")
+    @JsonIgnore
+    private Group group;
+
     public String getFirstAndLastName() {
         return firstName + " " + lastName;
     }
@@ -34,5 +40,9 @@ public class User {
 
     public String getNameWithRole() {
         return firstName + " " + lastName + " (" + role.getName() + ")";
+    }
+
+    public boolean isOrganizer() {
+        return role == Role.ORGANIZER;
     }
 }

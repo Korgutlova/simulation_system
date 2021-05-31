@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Список симуляций</title>
+    <link type="text/css"
+          href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+          rel="stylesheet">
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.4.0/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+</head>
+<body>
+<div th:insert="~{header :: header-block}"></div>
+<main role="main" class="container" style="max-width: 1700px; padding: 100px">
+    <ul>
+        <li class="project-item"
+            th:each="p : ${projects}">
+            <div>
+                <h4 th:text="'Название симуляции:' + ${p.name}"></h4>
+                <h5>Количество людей на проекте(симуляции): 5</h5>
+                <h5>Редактировать</h5>
+            </div>
+        </li>
+    </ul>
+    <div>
+        <a th:href="@{/project/create}">Создать симуляцию</a>
+    </div>
+</main>
+</body>
+</html>

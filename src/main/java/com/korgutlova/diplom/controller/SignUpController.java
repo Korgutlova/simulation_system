@@ -1,6 +1,7 @@
 package com.korgutlova.diplom.controller;
 
 import com.korgutlova.diplom.model.dto.SignUpForm;
+import com.korgutlova.diplom.service.api.GroupService;
 import com.korgutlova.diplom.service.api.UserService;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -16,10 +17,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class SignUpController {
 
     private final UserService userService;
+    private final GroupService groupService;
 
     @GetMapping("/signup")
     public String getSignUp(Model model) {
         model.addAttribute("signUpForm", new SignUpForm());
+        model.addAttribute("groups", groupService.findAll());
         return "signup";
     }
 

@@ -1,5 +1,6 @@
 package com.korgutlova.diplom.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.korgutlova.diplom.model.enums.simulation.CommunicationType;
 import com.korgutlova.diplom.model.enums.simulation.TaskDistributionType;
 import java.time.LocalDateTime;
@@ -21,6 +22,10 @@ public class Project {
 
     private String description;
 
+    private String language;
+
+    private String version;
+
     private LocalDateTime startDate;
 
     private LocalDateTime endDate;
@@ -37,8 +42,8 @@ public class Project {
     //необходимое время работы в неделю в часах
     private int workHoursPerWeek;
 
-    //todo, редактировать может только создатель (также добавлять,вопросы/ботов)
-//    @ManyToOne
-//    @JoinColumn(nullable = false, name = "user_id")
-//    private User creator;
+    @ManyToOne
+    @JoinColumn(nullable = false, name = "user_id")
+    @JsonIgnore
+    private User creator;
 }

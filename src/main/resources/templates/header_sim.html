@@ -10,12 +10,25 @@
             <ul class="navbar-nav ">
                 <li class="nav-item">
                     <div style="margin-right: 40px">
-                        <p class="navbar-text my-2 my-sm-0"><a class="navbar-link" th:href="@{/project/all}">
-                            Симуляции</a></p>
+                        <p class="navbar-text my-2 my-sm-0"><a class="navbar-link" th:href="'https://github.com/'">
+                            Сообщения</a></p>
                     </div>
+                </li>
                 <li class="nav-item">
                     <div style="margin-right: 40px">
-                        <p class="navbar-text my-2 my-sm-0"><a class="navbar-link" th:href="profile" th:text="${user.getFirstAndLastName()}"/></p>
+                        <p class="navbar-text my-2 my-sm-0"><a class="navbar-link" th:href="'https://github.com/'">
+                            ТаскТрекер</a></p>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <div style="margin-right: 40px">
+                        <p class="navbar-text my-2 my-sm-0"><a class="navbar-link" th:href="'https://github.com/'">
+                            Команда</a></p>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <div style="margin-right: 40px">
+                        <p class="navbar-text my-2 my-sm-0" th:text="${user.getFirstAndLastName()}"></p>
                     </div>
                 </li>
                 <li class="nav-item">

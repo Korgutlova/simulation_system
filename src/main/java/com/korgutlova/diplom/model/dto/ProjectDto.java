@@ -1,5 +1,6 @@
 package com.korgutlova.diplom.model.dto;
 
+import com.korgutlova.diplom.model.entity.User;
 import com.korgutlova.diplom.model.enums.simulation.CommunicationType;
 import com.korgutlova.diplom.model.enums.simulation.TaskDistributionType;
 import io.swagger.annotations.ApiModelProperty;
@@ -11,9 +12,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ProjectDto {
 
+    private Long id;
+
+    private String shortName;
+
     private String name;
 
     private String description;
+
+    private String language;
+
+    private String version;
 
     @ApiModelProperty(example = "2021-05-01T09:00:00")
     private LocalDateTime startDate;
@@ -26,4 +35,6 @@ public class ProjectDto {
     private TaskDistributionType taskDistributionType;
 
     private int workHoursPerWeek;
+
+    private User creator;
 }

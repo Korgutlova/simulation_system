@@ -2,6 +2,7 @@ package com.korgutlova.diplom.service.impl;
 
 import com.korgutlova.diplom.model.dto.SignUpForm;
 import com.korgutlova.diplom.model.entity.User;
+import com.korgutlova.diplom.model.enums.roles.Role;
 import com.korgutlova.diplom.model.mapper.UserMapper;
 import com.korgutlova.diplom.repository.UserRepository;
 import com.korgutlova.diplom.service.api.UserService;
@@ -27,6 +28,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public void register(SignUpForm signUpForm) {
         User user = userMapper.toEntity(signUpForm);
+        if (user.getRole() == Role.ORGANIZER) {
+            user.setGroup(null);
+        }
         user.setPassword(encoder.encode(signUpForm.getPassword()));
         userRepository.save(user);
     }

@@ -34,7 +34,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
                 .antMatchers("/login", "/sign_up/**", "**/**").anonymous()
                 .antMatchers("/chat/**", "/conversation/**", "/queue/**",
-                        "/app/**", "/topic/**", "/api/**")
+                        "/app/**", "/topic/**", "/api/**", "/home/**", "/project/**", "/static/**")
                 .hasAnyRole(USER.toString(), ADMIN.toString(), BOT.toString(), ORGANIZER.toString());
 
 
@@ -44,7 +44,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .loginProcessingUrl("/login/process")
                 .usernameParameter("login")
                 .passwordParameter("password")
-                .defaultSuccessUrl("/chat", true)
+                .defaultSuccessUrl("/home", true)
                 .failureUrl("/login?error=true")
                 .and()
                 .logout().logoutSuccessHandler(customizeLogoutSuccessHandler)
