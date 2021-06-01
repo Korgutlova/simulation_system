@@ -2,7 +2,9 @@ package com.korgutlova.diplom.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.korgutlova.diplom.model.enums.simulation.CommunicationType;
+import com.korgutlova.diplom.model.enums.simulation.StatusProject;
 import com.korgutlova.diplom.model.enums.simulation.TaskDistributionType;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Set;
 import javax.persistence.*;
@@ -26,9 +28,12 @@ public class Project {
 
     private String version;
 
-    private LocalDateTime startDate;
+    private LocalDate startDate;
 
-    private LocalDateTime endDate;
+    private LocalDate endDate;
+
+    @Enumerated(EnumType.STRING)
+    private StatusProject status = StatusProject.DRAFT;
 
     @Enumerated(EnumType.STRING)
     private CommunicationType communicationType;
@@ -36,11 +41,11 @@ public class Project {
     @Enumerated(EnumType.STRING)
     private TaskDistributionType taskDistributionType;
 
-    @OneToMany
-    private Set<Bot> bots;
-
     //необходимое время работы в неделю в часах
     private int workHoursPerWeek;
+
+    @OneToMany
+    private Set<Bot> bots;
 
     @ManyToOne
     @JoinColumn(nullable = false, name = "user_id")

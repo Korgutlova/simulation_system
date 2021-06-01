@@ -4,9 +4,11 @@ import com.korgutlova.diplom.model.entity.User;
 import com.korgutlova.diplom.model.enums.simulation.CommunicationType;
 import com.korgutlova.diplom.model.enums.simulation.TaskDistributionType;
 import io.swagger.annotations.ApiModelProperty;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Data
 @NoArgsConstructor
@@ -24,11 +26,11 @@ public class ProjectDto {
 
     private String version;
 
-    @ApiModelProperty(example = "2021-05-01T09:00:00")
-    private LocalDateTime startDate;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate startDate;
 
-    @ApiModelProperty(example = "2021-05-15T18:00:00")
-    private LocalDateTime endDate;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate endDate;
 
     private CommunicationType communicationType;
 

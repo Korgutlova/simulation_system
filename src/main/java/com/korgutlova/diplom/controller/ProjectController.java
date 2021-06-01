@@ -1,7 +1,9 @@
 package com.korgutlova.diplom.controller;
 
 import com.korgutlova.diplom.model.dto.ProjectDto;
+import com.korgutlova.diplom.model.entity.Project;
 import com.korgutlova.diplom.model.entity.User;
+import com.korgutlova.diplom.model.mapper.ProjectMapper;
 import com.korgutlova.diplom.service.api.ProjectService;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequestMapping("/project")
@@ -22,12 +25,23 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class ProjectController {
 
     private final ProjectService projectService;
+    private final ProjectMapper projectMapper;
 
     @GetMapping("/create")
-    public String createProjectPage(Model model) {
+    public String createProjectPage(@RequestParam(value = "project_id", required = false) Long projectId,
+                                    Model model) {
         User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        ProjectDto projectDto = new ProjectDto();
+        if (projectId != null) {
+            Project project = projectService.findById(projectId);
+            if (project.getCreator().equals(currentUser)) {
+                projectDto = projectMapper.toDto(project);
+            }
+        }
+
         model.addAttribute("user", currentUser);
-        model.addAttribute("projectForm", new ProjectDto());
+        model.addAttribute("projectForm", projectDto);
         return "project";
     }
 
@@ -37,8 +51,7 @@ public class ProjectController {
         User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (!bindingResult.hasErrors() && projectService.findByNameOrShortName(projectForm) == null){
             projectForm.setCreator(currentUser);
-            projectService.save(projectForm);
-            return "redirect:/home";
+            return "redirect:/bots/create?project_id=" + projectService.save(projectForm);
         }
         model.addAttribute("user", currentUser);
         return "project";

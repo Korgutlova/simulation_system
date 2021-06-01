@@ -34,7 +34,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
                 .antMatchers("/login", "/sign_up/**", "**/**").anonymous()
                 .antMatchers("/chat/**", "/conversation/**", "/queue/**",
-                        "/app/**", "/topic/**", "/api/**", "/home/**", "/project/**", "/static/**")
+                        "/app/**", "/topic/**", "/api/**", "/home/**", "/project/**", "/static/**", "/bots/**")
                 .hasAnyRole(USER.toString(), ADMIN.toString(), BOT.toString(), ORGANIZER.toString());
 
 

@@ -7,4 +7,6 @@ public interface UserService {
     User findByLogin(String login);
 
     void register(SignUpForm signUpForm);
+
+    void saveAsBot(User user);
 }

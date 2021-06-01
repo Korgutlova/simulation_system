@@ -13,4 +13,7 @@ public enum CommunicationType {
         this.description = description;
     }
 
+    public String getName() {
+        return name;
+    }
 }

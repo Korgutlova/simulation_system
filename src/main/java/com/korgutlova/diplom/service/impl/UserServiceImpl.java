@@ -35,4 +35,10 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
+    @Override
+    public void saveAsBot(User user) {
+        user.setRole(Role.BOT);
+        userRepository.save(user);
+    }
+
 }
