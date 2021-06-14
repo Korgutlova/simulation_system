@@ -31,12 +31,20 @@ public class BotServiceImpl implements BotService {
                 {
                     User user = userMapper.toEntity(botDto);
                     userService.saveAsBot(user);
+
                     Bot bot = new Bot();
+                    bot.setId(botDto.getId());
                     bot.setProject(project);
                     bot.setTeamRole(botDto.getRole());
                     bot.setUser(user);
+
                     botRepository.save(bot);
                 }
         );
+    }
+
+    @Override
+    public List<Bot> findBots(Project project) {
+        return botRepository.findAllByProject(project);
     }
 }

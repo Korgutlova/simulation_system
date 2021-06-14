@@ -41,8 +41,12 @@ public class Project {
     @Enumerated(EnumType.STRING)
     private TaskDistributionType taskDistributionType;
 
-    //необходимое время работы в неделю в часах
-    private int workHoursPerWeek;
+    //необходимое время работы в неделю в часах,
+    // если null значит списывание времени никак не регламентируется
+    private Integer workHoursPerWeek;
+
+    //уведомление о просроченных заданиях
+    private boolean checkOverdueTasks = false;
 
     @OneToMany
     private Set<Bot> bots;
@@ -51,4 +55,11 @@ public class Project {
     @JoinColumn(nullable = false, name = "user_id")
     @JsonIgnore
     private User creator;
+
+    // информация нужная во время инициализации проекта
+    private Integer countBotsMax = 4;
+
+    private Integer countCustomQuestionMax = 10;
+
+    private Integer countBotQuestionMax = 10;
 }

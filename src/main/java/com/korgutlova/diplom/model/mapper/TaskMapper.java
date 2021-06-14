@@ -10,7 +10,6 @@ public interface TaskMapper {
 
     @Mapping(source = "taskInSimulation.task.description", target = "description")
     @Mapping(source = "taskInSimulation.task.name", target = "name")
-    @Mapping(source = "taskInSimulation.task.number", target = "number")
     @Mapping(source = "taskInSimulation.task.creator", target = "creator")
     @Mapping(source = "taskInSimulation.task.priority", target = "priority")
     @Mapping(source = "taskInSimulation.task.severity", target = "severity")

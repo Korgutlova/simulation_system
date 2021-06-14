@@ -33,43 +33,60 @@
           th:action="@{/bots/create}"
           th:object="${botsForm}"
           method="post">
-        <button type="submit" name="addBot">Добавить бота</button>
+        <button class="btn btn-success" id="generate_names">Сгенерировать имена</button>
         <table>
             <thead>
             <tr>
-                <th>Кол-во</th>
-                <th>Логин</th>
-                <th>Фамилия</th>
-                <th>Имя</th>
-                <!--<th>-->
-                    <!--<button type="submit" name="addBot">Добавить бота</button>-->
-                <!--</th>-->
+                <th scope="col">#</th>
+                <th scope="col">Login</th>
+                <th scope="col">Фамилия</th>
+                <th scope="col">Имя</th>
+                <th scope="col">Отчество</th>
+                <th scope="col">Роль</th>
             </tr>
             </thead>
             <tbody>
             <tr th:each="row,rowStat : *{bots}">
                 <td th:text="${rowStat.count}">1</td>
+                <input style="visibility: hidden" type="number" th:field="*{bots[__${rowStat.index}__].id}"/>
+                <input style="visibility: hidden" type="number" th:field="*{bots[__${rowStat.index}__].userId}"/>
                 <td>
-                    <input type="text" th:field="*{bots[__${rowStat.index}__].login}" />
+                    <input type="text" class="form-control" th:field="*{bots[__${rowStat.index}__].login}" />
                 </td>
                 <td>
-                    <input type="text" th:field="*{bots[__${rowStat.index}__].lastName}" />
+                    <input type="text" class="form-control" th:field="*{bots[__${rowStat.index}__].lastName}" />
                 </td>
                 <td>
-                    <input type="text" th:field="*{bots[__${rowStat.index}__].firstName}" />
+                    <input type="text" class="form-control" th:field="*{bots[__${rowStat.index}__].firstName}" />
                 </td>
-                <!--<td>-->
-                    <!--<button type="submit" name="removeRow"-->
-                            <!--th:value="${rowStat.index}" th:text="#{seedstarter.row.remove}">Remove row</button>-->
-                <!--</td>-->
+                <td>
+                    <input type="text" class="form-control" th:field="*{bots[__${rowStat.index}__].thirdName}" />
+                </td>
+                <td>
+                    <select name="teamRole" th:field="*{bots[__${rowStat.index}__].role}" class="form-control">
+                        <option th:each="role : ${T(com.korgutlova.diplom.model.enums.roles.TeamRole).values()}"
+                                th:value="${role}"
+                                th:text="${role.getName()}">
+                        </option>
+                    </select>
+                </td>
             </tr>
             </tbody>
         </table>
-        <div class="form-group">
-            <input class="btn btn-success input-group" type="submit"
+        <br>
+        <input style="visibility: hidden" type="number" th:field="*{projectId}" th:value="${botsForm.projectId}">
+        <div class="form-group" style="width: 25%">
+            <input name="save" class="btn btn-success input-group" type="submit"
                    value="Переход к следующему шагу >"/>
         </div>
     </form>
 </main>
 </body>
+<script>
+    $(document).ready(function () {
+        $("#generate_names").click(function() {
+            alert("Nice!");
+        });
+    });
+</script>
 </html>

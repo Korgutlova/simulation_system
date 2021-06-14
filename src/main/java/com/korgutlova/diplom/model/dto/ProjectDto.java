@@ -32,11 +32,11 @@ public class ProjectDto {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate endDate;
 
-    private CommunicationType communicationType;
+    private CommunicationType communicationType = CommunicationType.WITHOUT_COMM;
 
-    private TaskDistributionType taskDistributionType;
+    private TaskDistributionType taskDistributionType = TaskDistributionType.STANDART;
 
-    private int workHoursPerWeek;
+    private Integer workHoursPerWeek;
 
     private User creator;
 }

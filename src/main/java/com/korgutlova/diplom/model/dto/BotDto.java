@@ -7,6 +7,10 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class BotDto {
+    private Long id;
+
+    private Long userId;
+
     private String login;
 
     private String firstName;

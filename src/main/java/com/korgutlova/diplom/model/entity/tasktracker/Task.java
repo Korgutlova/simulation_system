@@ -13,11 +13,13 @@ public class Task {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    private String number;
+    private String shortId;
 
     private String name;
 
     private String description;
+
+    private Integer difficult;
 
     @ManyToOne
     @JoinColumn(name = "bot_id", nullable = false)
@@ -34,6 +36,9 @@ public class Task {
 
     //сколько нужно дать верных ответов, чтобы выдать данную задачу пользователю
     private int rightQuestion;
+
+    //продолжительность задачи в часах (нужно для сроков задачи), по умолчанию 8 часов (обычный день)
+    private Integer duration = 8;
 
     @ManyToOne
     @JoinColumn(name = "project_id", nullable = false)

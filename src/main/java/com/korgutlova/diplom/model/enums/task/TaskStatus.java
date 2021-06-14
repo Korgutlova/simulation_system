@@ -4,9 +4,7 @@ public enum TaskStatus {
     TO_DO("К выполнению"),
     IN_PROGRESS("В процессе"),
     REVIEW("На ревью"),
-    QA("На тестировании"),
     DONE("Сделана"),
-    CLOSED("Закрыта"),
     CANCELLED("Отменена");
 
     private final String name;

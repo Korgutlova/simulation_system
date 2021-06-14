@@ -3,6 +3,7 @@ package com.korgutlova.diplom.controller;
 import com.korgutlova.diplom.model.dto.ProjectDto;
 import com.korgutlova.diplom.model.entity.Project;
 import com.korgutlova.diplom.model.entity.User;
+import com.korgutlova.diplom.model.enums.simulation.StatusProject;
 import com.korgutlova.diplom.model.mapper.ProjectMapper;
 import com.korgutlova.diplom.service.api.ProjectService;
 import javax.validation.Valid;
@@ -49,9 +50,18 @@ public class ProjectController {
     public String createProject(@ModelAttribute("projectForm") @Valid ProjectDto projectForm,
                                 BindingResult bindingResult, Model model) {
         User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (!bindingResult.hasErrors() && projectService.findByNameOrShortName(projectForm) == null){
-            projectForm.setCreator(currentUser);
-            return "redirect:/bots/create?project_id=" + projectService.save(projectForm);
+
+        if (!bindingResult.hasErrors()) {
+            Project project = projectService.findByNameOrShortName(projectForm);
+            if (project == null ||
+                    (project.getCreator().equals(currentUser) &&
+                            project.getStatus() == StatusProject.DRAFT)) {
+                if (project != null) {
+                    projectForm.setId(project.getId());
+                }
+                projectForm.setCreator(currentUser);
+                return "redirect:/bots/create?project_id=" + projectService.save(projectForm);
+            }
         }
         model.addAttribute("user", currentUser);
         return "project";
@@ -64,7 +74,7 @@ public class ProjectController {
     }
 
     @GetMapping("/all")
-    public String listProject(Model model){
+    public String listProject(Model model) {
         User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         //если не организатор то редирект на симуляции (пре авторайзед, на уровне класса)
         model.addAttribute("user", currentUser);

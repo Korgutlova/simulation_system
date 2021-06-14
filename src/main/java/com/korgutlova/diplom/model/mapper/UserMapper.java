@@ -14,5 +14,6 @@ public interface UserMapper {
     User toEntity(SignUpForm signUpForm);
 
     @Mapping(target = "role", source = "role", ignore = true)
+    @Mapping(target = "id", source = "userId")
     User toEntity(BotDto botDto);
 }

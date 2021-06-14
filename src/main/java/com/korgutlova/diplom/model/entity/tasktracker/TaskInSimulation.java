@@ -2,6 +2,7 @@ package com.korgutlova.diplom.model.entity.tasktracker;
 
 import com.korgutlova.diplom.model.entity.Simulation;
 import com.korgutlova.diplom.model.enums.task.TaskStatus;
+import java.time.LocalDateTime;
 import javax.persistence.*;
 import lombok.Data;
 
@@ -25,8 +26,8 @@ public class TaskInSimulation {
 
     private Boolean isViewed = false;
 
-    //если статус задачи в QA - назначать на тестировщика
-    //если на review то на тимлида
-    //когда задача в done/cancelled/closed - на PM
+    private LocalDateTime dueDate;
+
+    private LocalDateTime closedDate;
 
 }
