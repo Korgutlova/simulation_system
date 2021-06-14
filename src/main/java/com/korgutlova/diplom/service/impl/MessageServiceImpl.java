@@ -69,4 +69,15 @@ public class MessageServiceImpl implements MessageService {
         save(newMessage);
         return messageMapper.toView(newMessage);
     }
+
+    @Override
+    public MessageView createAnswerMessage(String answer, Bot bot, Simulation simulation) {
+        Message newMessage = new Message();
+        newMessage.setText(answer);
+        newMessage.setDirectionMessage(DirectionMessage.BOT_TO_USER);
+        newMessage.setBot(bot);
+        newMessage.setSimulation(simulationService.findActiveSimulation(simulation.getUser()));
+        save(newMessage);
+        return messageMapper.toView(newMessage);
+    }
 }

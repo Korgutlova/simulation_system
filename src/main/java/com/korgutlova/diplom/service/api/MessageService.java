@@ -21,4 +21,6 @@ public interface MessageService {
     MessageView createMessage(MessageDto messageDto, Bot bot);
 
     MessageView createAnswerMessage(String answer, Bot bot, User user);
+
+    MessageView createAnswerMessage(String answer, Bot bot, Simulation simulation);
 }
