@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TaskInSimulationRepository extends CrudRepository<TaskInSimulation, Long> {
-    List<TaskInSimulation> findBySimulation(Simulation simulation);
+    List<TaskInSimulation> findBySimulationAndIsViewed(Simulation simulation, Boolean isViewed);
 }

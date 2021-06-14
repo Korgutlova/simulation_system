@@ -30,7 +30,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public List<TaskInSimulation> findTasksBySimulation(Simulation simulation) {
-        return taskInSimulationRepository.findBySimulation(simulation);
+        return taskInSimulationRepository.findBySimulationAndIsViewed(simulation, true);
     }
 
     @Override

@@ -43,4 +43,8 @@ public class Task {
     @ManyToOne
     @JoinColumn(name = "project_id", nullable = false)
     private Project project;
+
+    public String getViewName() {
+        return "[" + this.shortId + "] " + this.name;
+    }
 }
