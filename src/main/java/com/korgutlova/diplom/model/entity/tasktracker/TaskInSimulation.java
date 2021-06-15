@@ -5,9 +5,11 @@ import com.korgutlova.diplom.model.enums.task.TaskStatus;
 import java.time.LocalDateTime;
 import javax.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Entity(name = "task_in_simulation")
+@NoArgsConstructor
 public class TaskInSimulation {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -30,4 +32,8 @@ public class TaskInSimulation {
 
     private LocalDateTime closedDate;
 
+    public TaskInSimulation(Simulation simulation, Task task) {
+        this.simulation = simulation;
+        this.task = task;
+    }
 }

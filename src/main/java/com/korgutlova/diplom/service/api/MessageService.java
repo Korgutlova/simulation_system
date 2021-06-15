@@ -23,4 +23,6 @@ public interface MessageService {
     MessageView createAnswerMessage(String answer, Bot bot, User user);
 
     MessageView createAnswerMessage(String answer, Bot bot, Simulation simulation);
+
+    void saveAndSend(String message, Bot bot, Simulation simulation);
 }

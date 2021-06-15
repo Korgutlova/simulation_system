@@ -11,4 +11,6 @@ public interface TaskService {
     List<TaskInSimulation> findTasksBySimulation(Simulation simulation);
 
     void issueNewTask(Simulation simulation);
+
+    void initTasksForSimulation(Simulation simulation);
 }

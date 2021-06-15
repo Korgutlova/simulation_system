@@ -1,21 +1,36 @@
 package com.korgutlova.diplom.service.impl;
 
 import com.korgutlova.diplom.model.entity.Simulation;
+import com.korgutlova.diplom.model.entity.question.QuestionToUserSimulation;
+import com.korgutlova.diplom.model.entity.tasktracker.Task;
 import com.korgutlova.diplom.model.entity.tasktracker.TaskInSimulation;
 import com.korgutlova.diplom.model.entity.view.TaskView;
 import com.korgutlova.diplom.model.mapper.TaskMapper;
 import com.korgutlova.diplom.repository.TaskInSimulationRepository;
 import com.korgutlova.diplom.repository.TaskRepository;
+import com.korgutlova.diplom.service.api.MessageService;
+import com.korgutlova.diplom.service.api.QuestionService;
 import com.korgutlova.diplom.service.api.TaskService;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TaskServiceImpl implements TaskService {
     private final TaskRepository taskRepository;
     private final TaskInSimulationRepository taskInSimulationRepository;
+
+    private final QuestionService questionService;
+    private final MessageService messageService;
+
     private final TaskMapper taskMapper;
 
 
@@ -35,6 +50,74 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public void issueNewTask(Simulation simulation) {
+        switch (simulation.getProject().getTaskDistributionType()) {
+            case ORDER:
+                getNewOrderTaskAndSend(simulation);
+                break;
+            case STANDART:
+                getNewRandomTaskAndSend(simulation);
+                break;
+            case VARIABLE:
+                chooseTaskAndSendQuestion(simulation);
+                break;
+        }
+    }
 
+    private void chooseTaskAndSendQuestion(Simulation simulation) {
+        Optional<TaskInSimulation> taskInSimulation = simulation.getTasks()
+                .stream().filter(t -> !t.getIsViewed()).findAny();
+        if (taskInSimulation.isPresent()) {
+            QuestionToUserSimulation questionToUserSimulation =
+                    questionService.findNewQuestionToUser(simulation, taskInSimulation.get().getTask());
+            if (questionToUserSimulation != null) {
+                messageService.saveAndSend(questionToUserSimulation.getQuestion().getQuestion(),
+                        questionToUserSimulation.getQuestion().getBot(),
+                        simulation);
+            }
+        } else {
+            log.info("Tasks for user " + simulation.getUser().getId() + " ended");
+        }
+    }
+
+    private void getNewRandomTaskAndSend(Simulation simulation) {
+        Optional<TaskInSimulation> taskInSimulation = simulation.getTasks()
+                .stream().filter(t -> !t.getIsViewed()).findAny();
+        if (taskInSimulation.isPresent()) {
+            assignTask(taskInSimulation.get());
+            messageService.saveAndSend("На вас назначена новая задача link", null, simulation);
+        } else {
+            log.info("Tasks for user " + simulation.getUser().getId() + " ended");
+        }
+    }
+
+    private void getNewOrderTaskAndSend(Simulation simulation) {
+        Optional<TaskInSimulation> taskInSimulation = simulation.getTasks().stream()
+                .filter(t -> !t.getIsViewed()).min(Comparator.comparing(t -> t.getTask().getOrder()));
+        if (taskInSimulation.isPresent()) {
+            assignTask(taskInSimulation.get());
+            messageService.saveAndSend("На вас назначена новая задача link", null, simulation);
+        } else {
+            log.info("Tasks for user " + simulation.getUser().getId() + " ended");
+        }
+    }
+
+    private void assignTask(TaskInSimulation taskInSimulation) {
+        taskInSimulation.setIsViewed(true);
+        Integer duration = taskInSimulation.getTask().getDuration();
+        if (duration != null) {
+            int days = duration / 8;
+            taskInSimulation.setDueDate(LocalDateTime.now().plus(days, ChronoUnit.DAYS));
+        }
+        taskInSimulationRepository.save(taskInSimulation);
+    }
+
+    //иницируется при заходе пользователя в симуляцию
+    @Override
+    public void initTasksForSimulation(Simulation simulation) {
+        List<Task> tasks = taskRepository.findAllByProject(simulation.getProject());
+        List<TaskInSimulation> taskInSimulations = tasks.stream()
+                .map(t -> new TaskInSimulation(simulation, t))
+                .collect(Collectors.toList());
+        taskInSimulationRepository.saveAll(taskInSimulations);
     }
 }

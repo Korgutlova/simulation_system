@@ -34,11 +34,10 @@ public class Task {
     @Enumerated(EnumType.STRING)
     private TypeTask typeTask = TypeTask.TASK;
 
-    //сколько нужно дать верных ответов, чтобы выдать данную задачу пользователю
-    private int rightQuestion;
-
     //продолжительность задачи в часах (нужно для сроков задачи), по умолчанию 8 часов (обычный день)
-    private Integer duration = 8;
+    private Integer duration;
+
+    private Integer order;
 
     @ManyToOne
     @JoinColumn(name = "project_id", nullable = false)

@@ -7,23 +7,33 @@ import com.korgutlova.diplom.model.entity.Simulation;
 import com.korgutlova.diplom.model.entity.User;
 import com.korgutlova.diplom.model.entity.view.MessageView;
 import com.korgutlova.diplom.model.enums.DirectionMessage;
+import com.korgutlova.diplom.model.enums.roles.TeamRole;
 import com.korgutlova.diplom.model.mapper.MessageMapper;
+import com.korgutlova.diplom.repository.BotRepository;
 import com.korgutlova.diplom.repository.MessageRepository;
 import com.korgutlova.diplom.service.api.MessageService;
 import com.korgutlova.diplom.service.api.SimulationService;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+
+import static com.korgutlova.diplom.util.TemplateBotMessages.CHAT_DESTINATION;
 
 @Service
 @RequiredArgsConstructor
 public class MessageServiceImpl implements MessageService {
 
     private final MessageRepository messageRepository;
+    private final BotRepository botRepository;
+
     private final SimulationService simulationService;
     private final MessageMapper messageMapper;
+
+    private final SimpMessagingTemplate simpleMessagingTemplate;
 
     @Override
     public void save(Message message) {
@@ -79,5 +89,25 @@ public class MessageServiceImpl implements MessageService {
         newMessage.setSimulation(simulationService.findActiveSimulation(simulation.getUser()));
         save(newMessage);
         return messageMapper.toView(newMessage);
+    }
+
+    @Override
+    public void saveAndSend(String message, Bot bot, Simulation simulation) {
+        if (bot == null) {
+            Optional<Bot> projectManager = botRepository.findAllByProject(simulation.getProject())
+                    .stream()
+                    .filter(b -> b.getTeamRole() == TeamRole.PROJECT_MANAGER)
+                    .findAny();
+            if (projectManager.isPresent()) {
+                bot = projectManager.get();
+            } else {
+                return;
+            }
+        }
+        MessageView messageView = createAnswerMessage(message, bot, simulation);
+        simpleMessagingTemplate.convertAndSend(
+                String.format(CHAT_DESTINATION, bot.getId(), simulation.getUser().getId()),
+                messageView
+        );
     }
 }
