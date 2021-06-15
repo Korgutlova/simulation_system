@@ -2,11 +2,9 @@ package com.korgutlova.diplom.job;
 
 import com.korgutlova.diplom.model.entity.Simulation;
 import com.korgutlova.diplom.model.entity.tasktracker.SpentTimeTask;
-import com.korgutlova.diplom.repository.SpentTimeTaskRepository;
 import com.korgutlova.diplom.service.api.MessageService;
 import com.korgutlova.diplom.service.api.SimulationService;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
+import com.korgutlova.diplom.service.api.SpentTimeTaskService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,8 +20,7 @@ public class CheckSpentTimeScheduler {
 
     private final SimulationService simulationService;
     private final MessageService messageService;
-
-    private final SpentTimeTaskRepository spentTimeTaskRepository;
+    private final SpentTimeTaskService spentTimeTaskService;
 
     //один раз в конце недели, в вс в 6 вечера
     @Scheduled(cron = "0 0 18 * * SAT")
@@ -34,12 +31,7 @@ public class CheckSpentTimeScheduler {
         for (Simulation simulation : simulations) {
             Integer workHours = simulation.getProject().getWorkHoursPerWeek();
             if (workHours != null) {
-                List<SpentTimeTask> spentTimeTasks = spentTimeTaskRepository
-                        .findAllByTask_SimulationAndStartDateIsBetween(
-                                simulation,
-                                LocalDateTime.now().minus(7, ChronoUnit.DAYS),
-                                LocalDateTime.now()
-                        );
+                List<SpentTimeTask> spentTimeTasks = spentTimeTaskService.findSpentTimeTasksForWeek(simulation);
                 int sumHours = spentTimeTasks
                         .stream()
                         .mapToInt(SpentTimeTask::getHours)

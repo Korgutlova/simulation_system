@@ -16,6 +16,12 @@
 <div th:insert="~{header :: header-block}"></div>
 <main role="main" class="container" style="max-width: 1700px; padding: 100px">
     <h1>Домашняя страница</h1>
+    <form th:action="@{/api/task/init}" method="post">
+        <input type="submit" value="Инициализация задач">
+    </form>
+    <form th:action="@{/api/task}" method="post">
+        <input type="submit" value="Получение новой задачи">
+    </form>
 </main>
 </body>
 </html>

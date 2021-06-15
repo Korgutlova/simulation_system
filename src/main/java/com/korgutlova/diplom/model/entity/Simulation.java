@@ -1,6 +1,7 @@
 package com.korgutlova.diplom.model.entity;
 
 import com.korgutlova.diplom.model.entity.tasktracker.TaskInSimulation;
+import java.util.List;
 import java.util.Set;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -36,6 +37,6 @@ public class Simulation {
 
     private String nameRepo;
 
-    @OneToMany(fetch = FetchType.EAGER)
-    private Set<TaskInSimulation> tasks;
+    @OneToMany(mappedBy = "simulation", fetch = FetchType.EAGER)
+    private List<TaskInSimulation> tasks;
 }

@@ -1,5 +1,6 @@
 package com.korgutlova.diplom.service.impl;
 
+import com.korgutlova.diplom.model.dto.UserTaskDto;
 import com.korgutlova.diplom.model.entity.Simulation;
 import com.korgutlova.diplom.model.entity.question.QuestionToUserSimulation;
 import com.korgutlova.diplom.model.entity.tasktracker.Task;
@@ -16,10 +17,13 @@ import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import static com.korgutlova.diplom.util.TemplateBotMessages.ISSUE_NEW_TASK;
 
 @Slf4j
 @Service
@@ -33,6 +37,11 @@ public class TaskServiceImpl implements TaskService {
 
     private final TaskMapper taskMapper;
 
+
+    @Override
+    public TaskInSimulation findById(Long id) {
+        return taskInSimulationRepository.findById(id).orElse(null);
+    }
 
     @Override
     public TaskView findTaskInSimulation(String id) {
@@ -64,8 +73,12 @@ public class TaskServiceImpl implements TaskService {
     }
 
     private void chooseTaskAndSendQuestion(Simulation simulation) {
-        Optional<TaskInSimulation> taskInSimulation = simulation.getTasks()
-                .stream().filter(t -> !t.getIsViewed()).findAny();
+        List<TaskInSimulation> tasks = simulation.getTasks()
+                .stream().filter(t -> !t.getIsViewed()).collect(Collectors.toList());
+
+        Optional<TaskInSimulation> taskInSimulation = tasks.size() == 0 ? Optional.empty() :
+                Optional.of(tasks.get(new Random().nextInt(tasks.size())));
+
         if (taskInSimulation.isPresent()) {
             QuestionToUserSimulation questionToUserSimulation =
                     questionService.findNewQuestionToUser(simulation, taskInSimulation.get().getTask());
@@ -80,22 +93,28 @@ public class TaskServiceImpl implements TaskService {
     }
 
     private void getNewRandomTaskAndSend(Simulation simulation) {
-        Optional<TaskInSimulation> taskInSimulation = simulation.getTasks()
-                .stream().filter(t -> !t.getIsViewed()).findAny();
-        if (taskInSimulation.isPresent()) {
-            assignTask(taskInSimulation.get());
-            messageService.saveAndSend("На вас назначена новая задача link", null, simulation);
-        } else {
-            log.info("Tasks for user " + simulation.getUser().getId() + " ended");
-        }
+        List<TaskInSimulation> tasks = simulation.getTasks()
+                .stream().filter(t -> !t.getIsViewed()).collect(Collectors.toList());
+
+        Optional<TaskInSimulation> taskInSimulation = tasks.size() == 0 ? Optional.empty() :
+                Optional.of(tasks.get(new Random().nextInt(tasks.size())));
+
+        sendMessage(taskInSimulation, simulation);
     }
 
     private void getNewOrderTaskAndSend(Simulation simulation) {
         Optional<TaskInSimulation> taskInSimulation = simulation.getTasks().stream()
                 .filter(t -> !t.getIsViewed()).min(Comparator.comparing(t -> t.getTask().getOrder()));
+
+        sendMessage(taskInSimulation, simulation);
+    }
+
+    private void sendMessage(Optional<TaskInSimulation> taskInSimulation, Simulation simulation) {
         if (taskInSimulation.isPresent()) {
-            assignTask(taskInSimulation.get());
-            messageService.saveAndSend("На вас назначена новая задача link", null, simulation);
+            TaskInSimulation task = taskInSimulation.get();
+            assignTask(task);
+            messageService.saveAndSend(String.format(ISSUE_NEW_TASK, task.getId(), task.getTask().getViewName()),
+                    null, simulation);
         } else {
             log.info("Tasks for user " + simulation.getUser().getId() + " ended");
         }
@@ -119,5 +138,12 @@ public class TaskServiceImpl implements TaskService {
                 .map(t -> new TaskInSimulation(simulation, t))
                 .collect(Collectors.toList());
         taskInSimulationRepository.saveAll(taskInSimulations);
+    }
+
+    @Override
+    public void editTask(UserTaskDto dto) {
+        TaskInSimulation task = findById(dto.getId());
+        task.setStatus(dto.getStatus());
+        taskInSimulationRepository.save(task);
     }
 }

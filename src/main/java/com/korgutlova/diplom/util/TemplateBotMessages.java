@@ -7,5 +7,8 @@ public final class TemplateBotMessages {
             "%s часов, необходимо списывать %s часов в неделю";
 
     public final static String OVERDUE_TASK_REMINDER = "Напоминаю, что по этой задаче <a href=\"http://localhost:8080/api/task?id=%s\">%s</a>" +
-            "истек срок, необходимо как можно быстрее ее завершить";
+            " истек срок, необходимо как можно быстрее ее завершить";
+
+    public final static String ISSUE_NEW_TASK = "Новая задача для тебя, держи " +
+            "<a href=\"http://localhost:8080/api/task?id=%s\">%s</a>";
 }
