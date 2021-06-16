@@ -7,5 +7,7 @@ import java.util.List;
 public interface SimulationService {
     Simulation findActiveSimulation(User user);
 
+    Simulation findInitSimulation(User user);
+
     List<Simulation> findActiveSimulations();
 }

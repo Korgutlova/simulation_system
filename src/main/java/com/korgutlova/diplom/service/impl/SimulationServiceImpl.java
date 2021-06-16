@@ -20,6 +20,11 @@ public class SimulationServiceImpl implements SimulationService {
     }
 
     @Override
+    public Simulation findInitSimulation(User user) {
+        return simulationRepository.findByStatusAndUser(SimStatus.INITIALIZE, user).orElse(null);
+    }
+
+    @Override
     public List<Simulation> findActiveSimulations() {
         return simulationRepository.findByStatus(SimStatus.IN_PROCESS);
     }
