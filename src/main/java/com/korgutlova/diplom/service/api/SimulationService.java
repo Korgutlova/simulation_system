@@ -10,4 +10,6 @@ public interface SimulationService {
     Simulation findInitSimulation(User user);
 
     List<Simulation> findActiveSimulations();
+
+    void save(Simulation simulation);
 }

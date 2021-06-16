@@ -28,4 +28,9 @@ public class SimulationServiceImpl implements SimulationService {
     public List<Simulation> findActiveSimulations() {
         return simulationRepository.findByStatus(SimStatus.IN_PROCESS);
     }
+
+    @Override
+    public void save(Simulation simulation) {
+        simulationRepository.save(simulation);
+    }
 }
