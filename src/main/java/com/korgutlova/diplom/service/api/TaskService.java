@@ -1,6 +1,5 @@
 package com.korgutlova.diplom.service.api;
 
-import com.korgutlova.diplom.model.dto.SpentTimeTaskDto;
 import com.korgutlova.diplom.model.dto.UserTaskDto;
 import com.korgutlova.diplom.model.entity.Simulation;
 import com.korgutlova.diplom.model.entity.tasktracker.TaskInSimulation;
@@ -19,4 +18,6 @@ public interface TaskService {
     void initTasksForSimulation(Simulation simulation);
 
     void editTask(UserTaskDto dto);
+
+    void assignTask(TaskInSimulation taskInSimulation);
 }

@@ -24,4 +24,7 @@ public class QuestionToUserSimulation {
 
     @CreationTimestamp
     private LocalDateTime dateAsked;
+
+    @OneToOne(mappedBy = "question", fetch = FetchType.EAGER)
+    private AnswerUser answer;
 }

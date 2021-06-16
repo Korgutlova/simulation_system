@@ -2,6 +2,7 @@ package com.korgutlova.diplom.job;
 
 import com.korgutlova.diplom.model.entity.Simulation;
 import com.korgutlova.diplom.model.entity.tasktracker.SpentTimeTask;
+import com.korgutlova.diplom.model.enums.DirectionMessage;
 import com.korgutlova.diplom.service.api.MessageService;
 import com.korgutlova.diplom.service.api.SimulationService;
 import com.korgutlova.diplom.service.api.SpentTimeTaskService;
@@ -40,7 +41,8 @@ public class CheckSpentTimeScheduler {
                     messageService.saveAndSend(
                             String.format(TIME_WRITE_REMINDER, sumHours, workHours),
                             null,
-                            simulation
+                            simulation,
+                            DirectionMessage.BOT_TO_USER
                     );
                     log.info("Send message from PM to user " + simulation.getUser().getId());
                 }

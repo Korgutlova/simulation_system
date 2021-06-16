@@ -1,11 +1,9 @@
 package com.korgutlova.diplom.service.api;
 
-import com.korgutlova.diplom.model.dto.MessageDto;
 import com.korgutlova.diplom.model.entity.Bot;
 import com.korgutlova.diplom.model.entity.Message;
 import com.korgutlova.diplom.model.entity.Simulation;
-import com.korgutlova.diplom.model.entity.User;
-import com.korgutlova.diplom.model.entity.view.MessageView;
+import com.korgutlova.diplom.model.enums.DirectionMessage;
 import java.util.List;
 import java.util.Set;
 
@@ -18,11 +16,5 @@ public interface MessageService {
 
     Set<Bot> findActiveBots(Simulation currentSim);
 
-    MessageView createMessage(MessageDto messageDto, Bot bot);
-
-    MessageView createAnswerMessage(String answer, Bot bot, User user);
-
-    MessageView createAnswerMessage(String answer, Bot bot, Simulation simulation);
-
-    void saveAndSend(String message, Bot bot, Simulation simulation);
+    void saveAndSend(String message, Bot bot, Simulation simulation, DirectionMessage directionMessage);
 }

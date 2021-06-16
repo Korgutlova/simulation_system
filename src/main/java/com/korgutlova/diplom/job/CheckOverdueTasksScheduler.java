@@ -2,6 +2,7 @@ package com.korgutlova.diplom.job;
 
 import com.korgutlova.diplom.model.entity.Simulation;
 import com.korgutlova.diplom.model.entity.tasktracker.TaskInSimulation;
+import com.korgutlova.diplom.model.enums.DirectionMessage;
 import com.korgutlova.diplom.model.enums.task.TaskStatus;
 import com.korgutlova.diplom.service.api.MessageService;
 import com.korgutlova.diplom.service.api.SimulationService;
@@ -39,7 +40,9 @@ public class CheckOverdueTasksScheduler {
                         messageService.saveAndSend(
                                 String.format(OVERDUE_TASK_REMINDER, task.getId(), task.getTask().getViewName()),
                                 null,
-                                simulation);
+                                simulation,
+                                DirectionMessage.BOT_TO_USER
+                        );
                         log.info("Send message about overdue tasks from PM to user " + simulation.getUser().getId());
                     }
                 }

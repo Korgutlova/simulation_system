@@ -38,14 +38,4 @@ public class QuestionController {
         questionService.create(questionCommandDto);
         return ResponseEntity.ok("ok");
     }
-
-    @GetMapping("/custom")
-    public ResponseEntity<String> customQuestion(@RequestParam String question) throws JsonProcessingException {
-        try {
-            String result = questionService.findCustomQuestion(question);
-            return ResponseEntity.ok("Ответ: " + result);
-        } catch (QuestionNotFound e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
-    }
 }
