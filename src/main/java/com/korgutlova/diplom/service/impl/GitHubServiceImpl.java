@@ -209,7 +209,6 @@ public class GitHubServiceImpl implements GitHubService {
                                 .substring(folder.getCanonicalPath().length() + 1)
                                 .replace("\\", "/");
 
-                        System.out.println("name " + namePath);
 
                         String info = FileUtils.readFileToString(file, "UTF-8");
                         treeBuilder.add(namePath, info, true);

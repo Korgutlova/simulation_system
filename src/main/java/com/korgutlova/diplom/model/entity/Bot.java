@@ -33,8 +33,6 @@ public class Bot {
     @JsonIgnore
     private Project project;
 
-    //list questions
-
     public String getNameWithRole() {
         return user.getFirstName() + " " + user.getLastName() + " (" + teamRole.getName() + ")";
     }

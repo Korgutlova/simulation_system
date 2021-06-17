@@ -25,4 +25,6 @@ public interface QuestionService {
     AnswerUser checkCorrectAnswerAndSave(QuestionToUserSimulation question, String text);
 
     int sumCorrectAnswers(TaskInSimulation taskInSimulation);
+
+    QuestionToUserSimulation findNewQuestionToUser(Simulation simulation);
 }

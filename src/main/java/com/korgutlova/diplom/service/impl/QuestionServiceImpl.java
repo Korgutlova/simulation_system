@@ -147,4 +147,9 @@ public class QuestionServiceImpl implements QuestionService {
                 (taskInSimulation.getTask(), taskInSimulation.getSimulation());
         return (int) answerUsers.stream().filter(AnswerUser::getIsRight).count();
     }
+
+    @Override
+    public QuestionToUserSimulation findNewQuestionToUser(Simulation simulation) {
+        return findNewQuestionToUser(simulation, null);
+    }
 }
