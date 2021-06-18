@@ -39,6 +39,8 @@ public class CheckRepository{
 
     private String namePR;
 
+    private Integer numberPR = null;
+
     private StatusAction statusAction;
 
     @CreationTimestamp

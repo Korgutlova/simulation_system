@@ -1,8 +1,13 @@
 package com.korgutlova.diplom.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.korgutlova.diplom.model.entity.CheckRepository;
 import com.korgutlova.diplom.model.entity.Project;
 import com.korgutlova.diplom.model.entity.Simulation;
 import com.korgutlova.diplom.model.entity.tasktracker.TaskInSimulation;
+import com.korgutlova.diplom.model.enums.simulation.StatusAction;
 import com.korgutlova.diplom.repository.CheckRepoRepository;
 import com.korgutlova.diplom.service.api.GitHubService;
 import com.korgutlova.diplom.service.api.ProjectService;
@@ -13,7 +18,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +31,12 @@ import org.kohsuke.github.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -38,6 +51,8 @@ public class GitHubServiceImpl implements GitHubService {
 
     private final ResourceLoader resourceLoader;
 
+    private final RestTemplate restTemplate;
+
     @Value("${github.oauth}")
     private String oauth;
 
@@ -48,6 +63,13 @@ public class GitHubServiceImpl implements GitHubService {
     private String workflowsFolder;
 
     private final static String REQUIRED_TYPE = "application/x-zip-compressed";
+
+    private final static String PATTERN_TASK = "[TASK_ID]";
+    private final static String PATTERN_BRANCH = "feature-" + PATTERN_TASK;
+    private final static String PATTERN_COMMIT = PATTERN_TASK + " ?: ?.*";
+
+    private final static String URL_WORKFLOWS_RUN = "https://api.github.com/repos/%s/%s/actions/workflows/%s/runs?branch=%s";
+    private final static String URL_WORKFLOWS = "https://api.github.com/repos/%s/%s/actions/workflows";
 
     @Override
     public void addFileForRepository(Long projectId, MultipartFile file) {
@@ -234,7 +256,129 @@ public class GitHubServiceImpl implements GitHubService {
     }
 
     @Override
-    public void checkRepository(Simulation simulation, TaskInSimulation task) {
+    public void checkRepository(TaskInSimulation task) throws IOException {
+        GitHub github = new GitHubBuilder()
+                .withOAuthToken(oauth)
+                .build();
+        GHRepository repository = github.getRepository(github.getMyself().getLogin() + "/" +
+                task.getSimulation().getNameRepo());
 
+        Optional<CheckRepository> checkRepositoryOpt = checkRepoRepository.findByTaskInSimulation(task);
+        StringBuilder errors = new StringBuilder();
+        GHPullRequest pullRequest;
+        GHBranch branch = null;
+
+        if (!(checkRepositoryOpt.isPresent() && checkRepositoryOpt.get().getNumberPR() == null)) {
+
+            Map<String, GHBranch> branches = repository.getBranches();
+            GHBranch tempBranch = branches.get(PATTERN_BRANCH.replace(PATTERN_TASK, task.getTask().getShortId()));
+
+            //check branch
+            if (tempBranch == null) {
+                log.warn("Для задачи " + task.getTask().getShortId() +
+                        " не было найдено ветки с соответствующим названием " +
+                        PATTERN_BRANCH);
+                return;
+            }
+
+            //check PR
+            List<GHPullRequest> pullRequests = repository.getPullRequests(GHIssueState.OPEN);
+
+            Optional<GHPullRequest> pullRequestOptional = pullRequests
+                    .stream()
+                    .filter(p -> p.getHead().getRef().equals(tempBranch.getName()))
+                    .findFirst();
+
+            if (!pullRequestOptional.isPresent()) {
+                log.warn("Pull Request из ветки " + PATTERN_BRANCH.replace(PATTERN_TASK, task.getTask().getShortId()) +
+                        " не было найдено");
+                return;
+            } else {
+                pullRequest = pullRequestOptional.get();
+            }
+
+            branch = tempBranch;
+        } else {
+            pullRequest = repository.getPullRequest(checkRepositoryOpt.get().getNumberPR());
+        }
+
+        //check commit
+        GHCommit commit = pullRequest.getHead().getCommit();
+
+        if (!commit.getCommitShortInfo().getMessage()
+                .matches(PATTERN_COMMIT.replace(PATTERN_TASK, task.getTask().getShortId()))) {
+            errors.append("Ошибка в названии коммита, должно быть в формате " + PATTERN_COMMIT)
+                    .append("\n");
+        }
+
+        //check status workflow
+        StatusAction statusAction = checkWorkflowStatus(github, repository, branch);
+
+        //save checkRepository
+        saveCheckRepository(checkRepositoryOpt, task, pullRequest, commit,
+                branch, errors.toString(), statusAction);
+    }
+
+    private StatusAction checkWorkflowStatus(GitHub github, GHRepository repository,
+                                             GHBranch branch) throws IOException {
+
+        JsonNode root = sendRequest(String.format(URL_WORKFLOWS,
+                github.getMyself().getLogin(), repository.getName()));
+
+        JsonNode nextWorkflowId = root.get("workflows").elements().next();
+        JsonNode workflowId = nextWorkflowId.get("id");
+
+
+        JsonNode lastRuns = sendRequest(String.format(URL_WORKFLOWS_RUN,
+                github.getMyself().getLogin(), repository.getName(), workflowId,
+                branch != null ? branch.getName() : ""));
+
+        String status = lastRuns.get("workflow_runs").elements().next()
+                .get("conclusion").asText();
+
+        switch (status) {
+            case "failure":
+                return StatusAction.ERROR;
+            case "success":
+                return StatusAction.SUCCESS;
+            default:
+                return null;
+        }
+    }
+
+    private JsonNode sendRequest(String url) throws JsonProcessingException {
+        ResponseEntity<String> response = restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                new HttpEntity<>(new HttpHeaders() {{
+                    set("Authorization", "token " + oauth);
+                }}),
+                String.class
+        );
+        ObjectMapper mapper = new ObjectMapper();
+
+        return mapper.readTree(Objects.requireNonNull(response.getBody()));
+    }
+
+    private void saveCheckRepository(Optional<CheckRepository> checkRepositoryOpt, TaskInSimulation task,
+                                     GHPullRequest pullRequest, GHCommit commit, GHBranch branch,
+                                     String errors, StatusAction statusAction) throws IOException {
+
+        CheckRepository checkRepository;
+        if (checkRepositoryOpt.isPresent()) {
+            checkRepository = checkRepositoryOpt.get();
+        } else {
+            checkRepository = new CheckRepository();
+            checkRepository.setTaskInSimulation(task);
+        }
+        checkRepository.setNameBranch(branch != null ? branch.getName() : "");
+        checkRepository.setNamePR(pullRequest != null ? pullRequest.getTitle() : "");
+        checkRepository.setNumberPR(pullRequest != null ? pullRequest.getNumber() : null);
+        checkRepository.setCommitSha(commit != null ? commit.getSHA1() : "");
+        checkRepository.setNameCommit(commit != null ? commit.getCommitShortInfo().getMessage() : "");
+        checkRepository.setErrors(errors);
+        checkRepository.setStatusAction(statusAction != null ? statusAction : StatusAction.NOT_INITIALIZED);
+
+        checkRepoRepository.save(checkRepository);
     }
 }
