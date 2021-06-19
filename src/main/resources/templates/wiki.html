@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Wiki</title>
+    <link type="text/css"
+          href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+          rel="stylesheet">
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.4.0/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+</head>
+<body>
+<div th:insert="~{header_sim :: header-block}"></div>
+<main role="main" class="container" style="max-width: 1700px; padding: 100px">
+    <h3>Wiki - информация о проекте</h3>
+    <br>
+    <p><b>Название проекта: </b><span
+            th:text="${simulation.getProject().getName()}"></span></p>
+    <p><b>Описание: </b><span
+            th:text="${simulation.getProject().getDescription()}"></span></p>
+    <p><b>Язык программирования: </b><span
+            th:text="${simulation.getProject().getLanguage()}"></span></p>
+    <p><b>Ссылка на репозиторий: </b>
+        <a th:href="${simulation.getFullNameRepo()}"
+           th:text="${simulation.getFullNameRepo()}"></a>
+    </p>
+    <h4>Команда проекта: </h4>
+    <ul>
+        <li style="list-style-type:none" th:each="b : ${bots}">
+            <div>
+                <b><p th:text="${b.getUser().getFirstAndLastName()} +
+                ' (' + ${b.getTeamRole().getName()}+ ')'">..</p></b>
+                <p th:utext="'Обязанности:' + ${b.getTeamRole().getDescription()}"></p>
+            </div>
+            <hr>
+        </li>
+    </ul>
+</main>
+</body>
+</html>

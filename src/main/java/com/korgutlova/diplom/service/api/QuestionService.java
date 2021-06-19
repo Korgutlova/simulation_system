@@ -5,9 +5,11 @@ import com.korgutlova.diplom.model.entity.Bot;
 import com.korgutlova.diplom.model.entity.Project;
 import com.korgutlova.diplom.model.entity.Simulation;
 import com.korgutlova.diplom.model.entity.question.AnswerUser;
+import com.korgutlova.diplom.model.entity.question.QuestionToUser;
 import com.korgutlova.diplom.model.entity.question.QuestionToUserSimulation;
 import com.korgutlova.diplom.model.entity.tasktracker.Task;
 import com.korgutlova.diplom.model.entity.tasktracker.TaskInSimulation;
+import java.util.List;
 
 public interface QuestionService {
     String findQuestionByCommand(String command);
@@ -27,4 +29,7 @@ public interface QuestionService {
     int sumCorrectAnswers(TaskInSimulation taskInSimulation);
 
     QuestionToUserSimulation findNewQuestionToUser(Simulation simulation);
+
+    List<QuestionToUser> findAllWelcomeMessage(Simulation simulation);
+
 }

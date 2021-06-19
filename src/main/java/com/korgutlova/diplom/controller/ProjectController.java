@@ -2,10 +2,14 @@ package com.korgutlova.diplom.controller;
 
 import com.korgutlova.diplom.model.dto.ProjectDto;
 import com.korgutlova.diplom.model.entity.Project;
+import com.korgutlova.diplom.model.entity.Simulation;
 import com.korgutlova.diplom.model.entity.User;
 import com.korgutlova.diplom.model.enums.simulation.StatusProject;
 import com.korgutlova.diplom.model.mapper.ProjectMapper;
 import com.korgutlova.diplom.service.api.ProjectService;
+import com.korgutlova.diplom.service.api.SimulationService;
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -13,12 +17,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/project")
@@ -26,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class ProjectController {
 
     private final ProjectService projectService;
+    private final SimulationService simulationService;
     private final ProjectMapper projectMapper;
 
     @GetMapping("/create")
@@ -76,9 +76,24 @@ public class ProjectController {
     @GetMapping("/all")
     public String listProject(Model model) {
         User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        //если не организатор то редирект на симуляции (пре авторайзед, на уровне класса)
+
+        List<Project> projects;
+        if (currentUser.isOrganizer()) {
+            projects = projectService.findByCreator(currentUser);
+        } else {
+            List<Simulation> simulations = simulationService.findSimulations(currentUser);
+            projects = projectService.findAllActive();
+            projects.removeAll(simulations
+                    .stream()
+                    .map(Simulation::getProject)
+                    .collect(Collectors.toList())
+            );
+            model.addAttribute("simulations", simulations);
+        }
+
         model.addAttribute("user", currentUser);
-        model.addAttribute("projects", projectService.findByCreator(currentUser));
+        model.addAttribute("projects", projects);
+
         return "projects";
     }
 }

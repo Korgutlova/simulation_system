@@ -15,9 +15,11 @@ public interface TaskService {
 
     void issueNewTask(Simulation simulation);
 
-    void initTasksForSimulation(Simulation simulation);
+    List<TaskInSimulation> initTasksForSimulation(Simulation simulation);
 
     void editTask(UserTaskDto dto);
 
     void assignTask(TaskInSimulation taskInSimulation);
+
+    List<TaskView> findViewedTasksFromSimulation(Simulation activeSimulation);
 }

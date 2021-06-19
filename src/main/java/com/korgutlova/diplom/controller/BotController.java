@@ -52,6 +52,11 @@ public class BotController {
             }
         } else {
             list = botMapper.toDto(bots);
+            if (bots.size() < countBots) {
+                for (int i = 0; i < countBots - bots.size(); i++) {
+                    list.add(new BotDto());
+                }
+            }
         }
 
         botsForm.setBots(list);

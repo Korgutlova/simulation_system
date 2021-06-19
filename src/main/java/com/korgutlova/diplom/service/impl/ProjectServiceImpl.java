@@ -6,6 +6,7 @@ import com.korgutlova.diplom.model.entity.User;
 import com.korgutlova.diplom.model.mapper.ProjectMapper;
 import com.korgutlova.diplom.repository.ProjectRepository;
 import com.korgutlova.diplom.service.api.ProjectService;
+import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -39,5 +40,10 @@ public class ProjectServiceImpl implements ProjectService {
         return projectRepository
                 .findByShortNameOrName(projectForm.getShortName(), projectForm.getName())
                 .orElse(null);
+    }
+
+    @Override
+    public List<Project> findAllActive() {
+        return (List<Project>) projectRepository.findAll();
     }
 }

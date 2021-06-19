@@ -13,4 +13,6 @@ public interface SimulationRepository extends CrudRepository<Simulation, Long> {
     Optional<Simulation> findByStatusAndUser(SimStatus status, User user);
 
     List<Simulation> findByStatus(SimStatus status);
+
+    List<Simulation> findByUser(User currentUser);
 }

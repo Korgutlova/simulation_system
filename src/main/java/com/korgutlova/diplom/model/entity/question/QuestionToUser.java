@@ -31,6 +31,8 @@ public class QuestionToUser {
     @ManyToOne
     private Task forTask;
 
+    private Boolean isWelcomeMessage = false;
+
     @Enumerated(EnumType.STRING)
     private TeamRole questionTopic;
 

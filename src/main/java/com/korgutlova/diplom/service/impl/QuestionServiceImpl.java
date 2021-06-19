@@ -152,4 +152,9 @@ public class QuestionServiceImpl implements QuestionService {
     public QuestionToUserSimulation findNewQuestionToUser(Simulation simulation) {
         return findNewQuestionToUser(simulation, null);
     }
+
+    @Override
+    public List<QuestionToUser> findAllWelcomeMessage(Simulation simulation) {
+        return questionToUserRepository.findAllByBot_ProjectAndIsWelcomeMessage(simulation.getProject(), true);
+    }
 }

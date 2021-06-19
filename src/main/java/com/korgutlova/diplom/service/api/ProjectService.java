@@ -13,4 +13,6 @@ public interface ProjectService {
     List<Project> findByCreator(User currentUser);
 
     Project findByNameOrShortName(ProjectDto projectForm);
+
+    List<Project> findAllActive();
 }

@@ -5,6 +5,7 @@ import com.korgutlova.diplom.model.enums.task.Priority;
 import com.korgutlova.diplom.model.enums.task.Severity;
 import com.korgutlova.diplom.model.enums.task.TaskStatus;
 import com.korgutlova.diplom.model.enums.task.TypeTask;
+import java.time.LocalDateTime;
 import lombok.Data;
 
 @Data
@@ -18,6 +19,8 @@ public class TaskView {
     private String name;
 
     private String description;
+
+    private LocalDateTime dueDate;
 
     private Bot creator;
 

@@ -27,7 +27,7 @@
                         th:id="'chat_' + ${b.getId()}">
                             <div><a style="text-decoration: none"
                                     th:href="@{/chat(id=${b.getId()})}">
-                                <p th:id="${b.getId()}" th:text="${b.getUser().getFirstAndLastName()}">..</p>
+                                <p th:id="${b.getId()}" th:text="${b.getNameWithRole()}">..</p>
                             </a>
                             </div>
                             <hr>
@@ -41,7 +41,7 @@
                 <h4 th:text="${bot.getNameWithRole()}">..</h4>
                 <hr>
             </div>
-            <div class="overflow-auto" style="height: 500px" id="messages">
+            <div class="overflow-auto" style="height: 600px" id="messages">
                 <ul class="messages"
                     style="list-style-type:none; margin-top: 20px">
                     <li class="message-item"
@@ -71,8 +71,18 @@
                         </div>
                         <br>
                     </li>
+                    <li>
+                        <div id="first_message" class="card container" style="padding-left: 8px; padding-top: 5px; line-height: 1"
+                        th:if="${#lists.isEmpty(messages)}">
+                            <div class="row">
+                                <div class="col" style="text-align: center;">
+                                    <p th:text="'У вас пока нет сообщений! Начните общение с'
+                                    + ${bot.getUser().getFirstAndLastName()} + '!'"> </p>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
                 </ul>
-
             </div>
             <hr>
             <div class="panel-footer">
@@ -160,6 +170,7 @@
 
     function addBlockToChat(block, my_item, scrollBar, container) {
         var block_item = $(my_item);
+        $('#first_message').hide();
         if (block_item.length) {
             block_item.last().after(block);
             $(scrollBar).scrollTop(1E10);

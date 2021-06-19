@@ -8,7 +8,8 @@ import com.korgutlova.diplom.model.mapper.MessageMapper;
 import com.korgutlova.diplom.service.api.BotService;
 import com.korgutlova.diplom.service.api.MessageService;
 import com.korgutlova.diplom.service.api.SimulationService;
-import java.util.Set;
+import java.util.List;
+import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -29,26 +30,20 @@ public class ChatController {
     public String getChat(@RequestParam(name = "id", required = false) String id, Model model) {
         User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        Bot bot;
         Simulation currentSim = simulationService.findActiveSimulation(currentUser);
+        List<Bot> activeBots = botService.findBots(currentSim.getProject());
+        Bot bot = activeBots.get(new Random().nextInt(activeBots.size()));
+
         if (id == null || id.isEmpty()) {
             Message lastMessage = messageService.findLastMessage(currentSim);
-            if (lastMessage == null){
-                //у пользователя нет сообщений, выводим пусто..
-                model.addAttribute("bots", null);
-                return "chat_page";
+            if (lastMessage != null) {
+                bot = lastMessage.getBot();
             }
-            bot = lastMessage.getBot();
-        } else  {
+        } else {
             bot = botService.findById(Long.valueOf(id));
-
-            //обработка экспшена если такго бота нет, или он есть но из другой симуляции
         }
 
-        Set<Bot> activeBots = messageService.findActiveBots(currentSim);
-        activeBots.add(bot);
         model.addAttribute("bots", activeBots);
-
         model.addAttribute("messages", messageMapper.toListViews(messageService.findMessages(currentSim, bot)));
         model.addAttribute("bot", bot);
         model.addAttribute("user", currentUser);

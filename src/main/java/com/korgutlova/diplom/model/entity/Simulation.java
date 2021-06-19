@@ -37,6 +37,8 @@ public class Simulation {
 
     private String nameRepo;
 
+    private String fullNameRepo;
+
     @OneToMany(mappedBy = "simulation", fetch = FetchType.EAGER)
     private List<TaskInSimulation> tasks;
 }

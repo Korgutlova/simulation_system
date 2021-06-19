@@ -137,14 +137,20 @@ public class TaskServiceImpl implements TaskService {
         taskInSimulationRepository.save(taskInSimulation);
     }
 
+    @Override
+    public List<TaskView> findViewedTasksFromSimulation(Simulation activeSimulation) {
+        return taskMapper.toView(taskInSimulationRepository.findBySimulationAndIsViewed(activeSimulation, true));
+    }
+
     //иницируется при заходе пользователя в симуляцию
     @Override
-    public void initTasksForSimulation(Simulation simulation) {
+    public List<TaskInSimulation> initTasksForSimulation(Simulation simulation) {
         List<Task> tasks = taskRepository.findAllByProject(simulation.getProject());
         List<TaskInSimulation> taskInSimulations = tasks.stream()
                 .map(t -> new TaskInSimulation(simulation, t))
                 .collect(Collectors.toList());
         taskInSimulationRepository.saveAll(taskInSimulations);
+        return taskInSimulations;
     }
 
     @Override

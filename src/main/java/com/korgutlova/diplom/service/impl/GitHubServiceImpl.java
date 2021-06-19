@@ -178,6 +178,8 @@ public class GitHubServiceImpl implements GitHubService {
             GHRepository repository = createRepo(github, user, simulation);
 
             simulation.setNameRepo(repository.getName());
+            simulation.setFullNameRepo(String.format("https://github.com/%s/%s",
+                    github.getMyself().getLogin(), repository.getName()));
 
             simulationService.save(simulation);
 
