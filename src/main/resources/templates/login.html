@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Авторизация в СимСист ИТИС</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container">
+    <div class="login block"
+         style="width:400px; height: 300px; margin: 200px auto auto;">
+        <h4>СимСист ИТИС </h4>
+        <br>
+        <form action="#" th:action="@{/login/process}" th:object="${loginForm}" method="post">
+            <div class="alert alert-danger"
+                 th:if="${error}"
+                 th:with="errorMsg=${session['SPRING_SECURITY_LAST_EXCEPTION'].message}">
+                <span th:text="${errorMsg}">Wrong input!</span>
+            </div>
+            <div class="form-group">
+                <input type="text" th:field="*{login}" class="form-control" placeholder="Name..."/>
+            </div>
+            <div class="form-group">
+                <input type="password" th:field="*{password}" class="form-control password-field" placeholder="Password..."/>
+            </div>
+            <div class="form-group">
+                <input class="btn btn-success input-group" type="submit" value="Войти"/>
+            </div>
+            <div>
+                <a th:href="@{/signup}"> Нет аккаунта? Зарегистрируйся!</a>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>

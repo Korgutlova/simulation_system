@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="header-block">
+    <nav class="navbar navbar-expand-md navbar-light bg-light">
+        <a class="navbar-brand" href="#">
+            <img src="https://upload.wikimedia.org/wikipedia/ru/thumb/f/f3/Эмблема_КФУ_с_2015.svg/855px-Эмблема_КФУ_с_2015.svg.png" width="443" height="70" alt="">
+        </a>
+        <div class="collapse navbar-collapse justify-content-end">
+            <ul class="navbar-nav ">
+                <li class="nav-item">
+                    <div style="margin-right: 40px">
+                        <p class="navbar-text my-2 my-sm-0"><a class="navbar-link"th:href="@{/chat}">
+                            Сообщения</a></p>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <div style="margin-right: 40px">
+                        <p class="navbar-text my-2 my-sm-0"><a class="navbar-link" th:href="@{/api/task/all}">
+                            ТаскТрекер</a></p>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <div style="margin-right: 40px">
+                        <p class="navbar-text my-2 my-sm-0"><a class="navbar-link" th:href="@{/api/simulation/wiki}">
+                            Wiki</a></p>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <div style="margin-right: 40px">
+                        <p class="navbar-text my-2 my-sm-0" th:text="${user.getFirstAndLastName()}"></p>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <form th:action="@{/logout}" method="post">
+                        <button class="btn btn-outline-danger my-2 my-sm-0" type="submit">Выйти</button>
+                    </form>
+                </li>
+            </ul>
+
+        </div>
+    </nav>
+</div>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Создание симуляции</title>
+    <link type="text/css"
+          href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+          rel="stylesheet">
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.4.0/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <link th:href="@{/css/steps.css}" rel="stylesheet">
+</head>
+<body>
+<div th:insert="~{header :: header-block}"></div>
+<main role="main" class="container" style="max-width: 1700px; padding: 75px">
+    <h3>Создание симуляции </h3>
+    <div class="container-fluid">
+        <div class="row">
+                <ul id="progressbar" class="text-center">
+                    <li class="active step0" id="step1">Начальная настройка</li>
+                    <li class="active step0" id="step2">Настройка ботов</li>
+                    <li class="step0" id="step3">Настройка вопросов</li>
+                    <li class="step0" id="step4">Файлы для репозитория</li>
+                    <li class="step0" id="step5">Завершение</li>
+                </ul>
+        </div>
+    </div>
+    <br>
+    <form action="#"
+          th:action="@{/bots/create}"
+          th:object="${botsForm}"
+          method="post">
+        <button class="btn btn-success" id="generate_names">Сгенерировать имена</button>
+        <table>
+            <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Login</th>
+                <th scope="col">Фамилия</th>
+                <th scope="col">Имя</th>
+                <th scope="col">Отчество</th>
+                <th scope="col">Роль</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="row,rowStat : *{bots}">
+                <td th:text="${rowStat.count}">1</td>
+                <input style="visibility: hidden" type="number" th:field="*{bots[__${rowStat.index}__].id}"/>
+                <input style="visibility: hidden" type="number" th:field="*{bots[__${rowStat.index}__].userId}"/>
+                <td>
+                    <input type="text" class="form-control" th:field="*{bots[__${rowStat.index}__].login}" />
+                </td>
+                <td>
+                    <input type="text" class="form-control" th:field="*{bots[__${rowStat.index}__].lastName}" />
+                </td>
+                <td>
+                    <input type="text" class="form-control" th:field="*{bots[__${rowStat.index}__].firstName}" />
+                </td>
+                <td>
+                    <input type="text" class="form-control" th:field="*{bots[__${rowStat.index}__].thirdName}" />
+                </td>
+                <td>
+                    <select name="teamRole" th:field="*{bots[__${rowStat.index}__].role}" class="form-control">
+                        <option th:each="role : ${T(com.korgutlova.diplom.model.enums.roles.TeamRole).values()}"
+                                th:value="${role}"
+                                th:text="${role.getName()}">
+                        </option>
+                    </select>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <br>
+        <input style="visibility: hidden" type="number" th:field="*{projectId}" th:value="${botsForm.projectId}">
+        <div class="form-group" style="width: 25%">
+            <input name="save" class="btn btn-success input-group" type="submit"
+                   value="Переход к следующему шагу >"/>
+        </div>
+    </form>
+</main>
+</body>
+<script>
+    $(document).ready(function () {
+        $("#generate_names").click(function() {
+            alert("Nice!");
+        });
+    });
+</script>
+</html>

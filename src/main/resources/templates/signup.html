@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Регистрация в СимСист ИТИС</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+</head>
+<body>
+<div class="container">
+    <div class="login block"
+         style="width:400px; height: 300px; margin: 150px auto auto;">
+        <h4>Присоединяйся к СимСист ИТИС</h4>
+        <br>
+        <form th:action="@{/signup}" th:object="${signUpForm}" method="post">
+            <div class="form-group">
+                <input type="text" th:field="*{login}" class="form-control" placeholder="Логин..."/>
+            </div>
+            <div class="form-group">
+                <input type="text" th:field="*{firstName}" class="form-control" placeholder="Имя..."/>
+            </div>
+            <div class="form-group">
+                <input type="text" th:field="*{lastName}" class="form-control" placeholder="Фамилия..."/>
+            </div>
+            <div class="form-group">
+                <input type="text" th:field="*{thirdName}" class="form-control" placeholder="Отчество..."/>
+            </div>
+            <div class="form-group">
+                <select name="role" th:field="*{role}" class="form-control" id="role_field">
+                    <option th:each="role : ${T(com.korgutlova.diplom.model.enums.roles.RoleForm).values()}"
+                            th:value="${role}"
+                            th:text="${role.getName()}">
+                    </option>
+                </select>
+            </div>
+            <div class="form-group" id="groups_id">
+                <select name="role" th:field="*{group}" class="form-control">
+                    <option th:each="group : ${groups}"
+                            th:value="${group.getId()}"
+                            th:text="${group.getName()}">
+                    </option>
+                </select>
+            </div>
+            <div class="form-group">
+                <input type="password" th:field="*{password}" class="form-control password-field" placeholder="Пароль..."/>
+            </div>
+            <div class="form-group">
+                <input type="password" class="form-control password-field" placeholder="Повторите пароль..."/>
+            </div>
+            <div class="form-group">
+                <input class="btn btn-success input-group" type="submit" value="Зарегистрироваться"/>
+            </div>
+            <div>
+                <a th:href="@{/login}"> Есть аккаунт? Зайди!</a>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+<script th:inline="javascript">
+    $(document).ready(function () {
+        $("#role_field").on('change', function() {
+            if ($(this).val() === "USER"){
+                $("#groups_id").show();
+            } else {
+                $("#groups_id").hide();
+            }
+        });
+    });
+</script>
+</html>

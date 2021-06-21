@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>ТаскТрекер</title>
+    <link type="text/css"
+          href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+          rel="stylesheet">
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.4.0/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+</head>
+<body>
+<div th:insert="~{header_sim :: header-block}"></div>
+<main role="main" class="container" style="max-width: 1700px; padding: 100px">
+    <h4>Список задач</h4>
+    <ul>
+        <li class="task-item" style="list-style-type:none"
+            th:each="t : ${tasks}">
+            <a th:href="@{/api/task(id=${t.id})}" style="text-decoration: none; color:black">
+                <div onmouseover="this.style.backgroundColor='#a0d1ff';" onmouseout="this.style.backgroundColor='#ffffff';">
+                    <b><p style="font-size: 22px; color: darkslateblue" th:text="${t.number} +': ' + ${t.name}"></p></b>
+                    <p><b>Срок задачи: </b><span th:text="${#temporals.format(t.dueDate, 'dd.MM.YY')}"></span></p>
+                    <p><b>Статус: </b><span th:text="${t.status.getName()}"></span></p>
+                </div>
+            </a>
+            <hr>
+        </li>
+    </ul>
+</main>
+</body>
+</html>

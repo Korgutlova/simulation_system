@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Название задачи</title>
+    <link type="text/css"
+          href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+          rel="stylesheet">
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.4.0/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+</head>
+<body>
+<div th:insert="~{header_sim :: header-block}"></div>
+<main role="main" class="container" style="max-width: 1700px; padding: 100px">
+    <div class="row">
+        <div class="col-7">
+            <h3 th:text="${task.number} + ': ' + ${task.name}">Name</h3>
+            <br>
+            <h4><i>Описание</i></h4>
+            <br>
+            <div class="card container">
+                <p th:utext="${task.description}">Description</p>
+            </div>
+        </div>
+        <div class="col">
+            <p><b>Тип задачи: </b><span
+                    th:text="${task.typeTask.getName()}"></span> <i
+                    class="fa fa-check-square" aria-hidden="true"></i></p>
+            <p><b>Создатель: </b><span
+                    th:text="${task.creator.getUser().getFirstAndLastName()}"></span>
+            </p>
+            <p><b>Исполнитель: </b><span
+                    th:text="${user.getFirstAndLastName()}"></span></p>
+            <p><b>Статус: </b><span th:text="${task.status.getName()}"></span>
+            </p>
+            <p><b>Приоритет: </b><span
+                    th:text="${task.priority.getName()}"></span></p>
+            <p><b>Важность: </b><span
+                    th:text="${task.severity.getName()}"></span></p>
+            <p><b>Срок задачи: </b><span
+                    th:text="${#temporals.format(task.dueDate, 'dd.MM.YY')}"></span>
+            </p>
+            <hr>
+            <form th:action="@{/api/task/edit}" th:object="${form}" method="post">
+                <input style="visibility: hidden" type="number"
+                       th:field="*{id}"/>
+                <input style="visibility: hidden" type="text"
+                       th:field="*{status}"/>
+                <div th:if="${task.status == T(com.korgutlova.diplom.model.enums.task.TaskStatus).TO_DO}">
+                    <input type="submit" class="btn btn-success" value="Взять в работу">
+                </div>
+                <div th:if="${task.status == T(com.korgutlova.diplom.model.enums.task.TaskStatus).IN_PROGRESS}">
+                    <input type="submit" class="btn btn-success" value="Отправить на ревью">
+                </div>
+                <br>
+            </form>
+            <button class="btn btn-info my-2 my-sm-0">Списать время</button>
+        </div>
+    </div>
+</main>
+</body>
+</html>

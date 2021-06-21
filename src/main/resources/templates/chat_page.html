@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="'Чат с ' + ${bot.getUser().getFirstAndLastName()}">Чат</title>
+    <link type="text/css"
+          href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+          rel="stylesheet">
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.4.0/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+</head>
+<body>
+<div th:insert="~{header_sim :: header-block}"></div>
+<main role="main" class="container" style="max-width: 1700px;">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="header_chat">
+                <h4>Чаты</h4>
+                <hr>
+                <div id="chats-panel" class="overflow-auto"
+                     style="height: 500px">
+                    <ul class="chats" style="list-style-type:none">
+                        <li class="chat-item" style="list-style-type:none" th:each="b : ${bots}"
+                        th:id="'chat_' + ${b.getId()}">
+                            <div><a style="text-decoration: none"
+                                    th:href="@{/chat(id=${b.getId()})}">
+                                <p th:id="${b.getId()}" th:text="${b.getNameWithRole()}">..</p>
+                            </a>
+                            </div>
+                            <hr>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-7">
+            <div class="header_chat">
+                <h4 th:text="${bot.getNameWithRole()}">..</h4>
+                <hr>
+            </div>
+            <div class="overflow-auto" style="height: 600px" id="messages">
+                <ul class="messages"
+                    style="list-style-type:none; margin-top: 20px">
+                    <li class="message-item"
+                    th:each="m : ${messages}">
+                        <div class="card container" style="padding-left: 8px; padding-top: 5px; line-height: 1"
+                             th:if="${m.isFromBot()}">
+                            <div class="row">
+                                <div class="col-9">
+                                    <p th:utext="${m.getText()}">Text</p>
+                                </div>
+                                <div class="col-3" style="text-align: right;">
+                                    <p th:text="${#temporals.format(m.getMessageCreated(), 'HH:mm:ss dd.MM.YY')}"
+                                       style="color: gray;">Data</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card container" style="color:white; background: #a0a2c9; padding-left: 8px; padding-top: 5px; line-height: 1"
+                             th:unless="${m.isFromBot()}">
+                            <div class="row">
+                                <div class="col-3" style="text-align: left;">
+                                    <p th:text="${#temporals.format(m.getMessageCreated(), 'HH:mm:ss dd.MM.YY')}">Data</p>
+                                </div>
+                                <div class="col-9" style="text-align: right">
+                                    <p th:text="${m.getText()}">Text</p>
+                                </div>
+                            </div>
+                        </div>
+                        <br>
+                    </li>
+                    <li>
+                        <div id="first_message" class="card container" style="padding-left: 8px; padding-top: 5px; line-height: 1"
+                        th:if="${#lists.isEmpty(messages)}">
+                            <div class="row">
+                                <div class="col" style="text-align: center;">
+                                    <p th:text="'У вас пока нет сообщений! Начните общение с'
+                                    + ${bot.getUser().getFirstAndLastName()} + '!'"> </p>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <hr>
+            <div class="panel-footer">
+                <div class=" row" style=" margin-left: 60px">
+                    <div class="col-md-8">
+            <textarea name="text" id="message" cols="70" rows="2"
+                      class="form-control"
+                      placeholder="Введите ваше сообщение..."></textarea>
+                    </div>
+                    <div class="col-md-3">
+                        <input class="btn btn-info"
+                               style="width: 150px; background: #5c4bad"
+                               type="submit" id="custombtn" value="Отправить">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+<script th:inline="javascript">
+    var ws;
+    var stompClient;
+    $(document).ready(function () {
+        $("#messages").scrollTop(1E10);
+        $('#custombtn').click(function () {
+            var message = $('#message');
+            if (message.val().length > 500) {
+                alert("Message length exceeds 500 characters");
+            } else {
+                sendForm();
+                message.val('');
+            }
+        });
+
+        // $('.messages').on('click', '.del_message', function () {
+        //     deleteForm($(this).parent().parent().parent().parent().attr("id"));
+        // });
+
+        ws = new SockJS('/ws');
+        stompClient = Stomp.over(ws);
+        stompClient.connect({}, function () {
+            var addressRoom = '/queue/bot/' + [[${bot.getId()}]];
+            var addressConvUser = addressRoom + '/user/' + [[${user.getId()}]];
+            stompClient.subscribe(addressConvUser, function (message) {
+                var m = JSON.parse(message.body);
+                var blockChat;
+                if (m.directionMessage === 'BOT_TO_USER'){
+                    blockChat = '<li class="message-item">\n' +
+                        '\t<div class="card container" style="padding-left: 8px; padding-top: 5px; line-height: 1">\n' +
+                        '\t\t<div class="row">\n' +
+                        '\t\t\t<div class="col-9">\n' +
+                        '\t\t\t\t<p>' + m.text + '</p>\n' +
+                        '\t\t\t</div>\n' +
+                        '\t\t\t<div class="col-3" style="text-align: right;">\n' +
+                        '\t\t\t\t<p style="color: gray;">' + m.messageCreated + '</p>\n' +
+                        '\t\t\t</div>\n' +
+                        '\t\t</div>\n' +
+                        '\t</div>\n' +
+                        '\t<br>\n' +
+                        '</li>';
+                    addBlockToChat(blockChat, '.message-item', '#messages', '.messages');
+                } else {
+                    blockChat ='<li class="message-item">\n' +
+                        '\t<div class="card container" style="color:white; background: #a0a2c9; padding-left: 8px; padding-top: 5px; line-height: 1">\n' +
+                        '\t\t<div class="row">\n' +
+                        '\t\t\t<div class="col-3" style="text-align: left;">\n' +
+                        '\t\t\t\t<p>' + m.messageCreated + '</p>\n' +
+                        '\t\t\t</div>\n' +
+                        '\t\t\t<div class="col-9" style="text-align: right;">\n' +
+                        '\t\t\t\t<p>' + m.text + '</p>\n' +
+                        '\t\t\t</div>\n' +
+                        '\t\t</div>\n' +
+                        '\t</div>\n' +
+                        '\t<br>\n' +
+                        '</li>';
+                    addBlockToChat(blockChat, '.message-item', '#messages', '.messages');
+                }
+            });
+        }, function (error) {
+            console.log("STOMP protocol error " + error);
+        });
+
+    });
+
+    function addBlockToChat(block, my_item, scrollBar, container) {
+        var block_item = $(my_item);
+        $('#first_message').hide();
+        if (block_item.length) {
+            block_item.last().after(block);
+            $(scrollBar).scrollTop(1E10);
+        } else {
+            $(container).append(block);
+        }
+    }
+
+    function sendForm() {
+        var text = $('#message').val();
+        if (text != null && (text.trim().length > 0)) {
+            var sendAddress = '/app/bot/send/' + [[${bot.getId()}]];
+            var userObj = /*[[${user}]]*/ {};
+            stompClient.send(sendAddress, {}, JSON.stringify({
+                text: text,
+                user: userObj
+            }));
+        } else {
+            alert("Cannot send an empty message");
+        }
+    }
+</script>
+</html>

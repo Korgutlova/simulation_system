@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Список симуляций</title>
+    <link type="text/css"
+          href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+          rel="stylesheet">
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.4.0/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+</head>
+<body>
+<div th:insert="~{header :: header-block}"></div>
+<main role="main" class="container" style="max-width: 1700px; padding: 100px">
+    <h3>Список симуляций</h3>
+    <ul>
+        <li class="project-item" style="list-style-type:none"
+            th:each="p : ${projects}">
+            <div>
+                <p><b>Название симуляции: </b><span th:text="${p.name}"></span>
+                <p><b>Описание: </b><span th:text="${p.description}"></span>
+                </p>
+                <div th:if="${!user.isOrganizer()}">
+                    <form style="width: 300px"
+                          th:action="@{/api/simulation/init(id=${p.getId()})}"
+                          method="post">
+                        <div class="form-group" th:id="'hidden_form_' + ${p.getId()}" style="display: none">
+                            <label>Введти ваш логин в GitHub</label>
+                            <input type="text"
+                                   name="login" class="form-control"
+                                   placeholder="Login..."/>
+                            <br>
+                            <input type="submit"
+                                   class="btn btn-success input-group"
+                                   value="Начать симуляцию"/>
+                        </div>
+                        <input type="button"
+                               class="btn btn-success input-group start_fake"
+                               value="Начать симуляцию"/>
+                    </form>
+                </div>
+                <div th:if="${user.isOrganizer()}">
+                    <form th:action="@{/api/project/edit}" method="post">
+                        <input type="submit" value="Редактировать">
+                    </form>
+                </div>
+            </div>
+            <hr>
+        </li>
+    </ul>
+    <div th:if="${user.isOrganizer()}">
+        <div>
+            <a th:href="@{/project/create}">Создать симуляцию</a>
+        </div>
+    </div>
+    <div th:if="${!user.isOrganizer()}">
+        <ul>
+            <li class="simulation-item" style="list-style-type:none"
+                th:each="s : ${simulations}">
+                <div>
+                    <p><b>Название симуляции: </b><span
+                            th:text="${s.getProject().getName()}"></span></p>
+                    <p><b>Описание: </b><span th:text="${s.getProject().description}"></span>
+                    <p><b>Статус: </b><span
+                            th:text="${s.getStatus().getName()}"></span></p>
+
+                    <div th:if="${s.getStatus() != T(com.korgutlova.diplom.model.enums.simulation.SimStatus).FINISHED &&
+                                    s.getStatus() != T(com.korgutlova.diplom.model.enums.simulation.SimStatus).INITIALIZE} ">
+                        <form style="width: 300px" th:action="@{/api/simulation/active(id=${s.getId()})}"
+                              method="post">
+                            <input class="btn btn-info input-group" type="submit" value="Продолжить симуляцию">
+                        </form>
+                    </div>
+                </div>
+                <hr>
+            </li>
+        </ul>
+    </div>
+</main>
+</body>
+<script th:inline="javascript">
+    $(document).ready(function () {
+        $(".start_fake").on('click', function () {
+            $(this).hide();
+            $(this).prev().show();
+        });
+    });
+</script>
+</html>
